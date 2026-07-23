@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>برنامج مدار | كامب جذور - التسجيل</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+  
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- شاشة التحميل -->
+  <div id="appLoader" class="app-loader">
+    <div class="loader-content">
+      <div class="loader-logo">
+        <span class="loader-icon">&#9670;</span>
+      </div>
+      <div class="loader-text">جاري التحميل...</div>
+      <div class="loader-bar"><div class="loader-bar-fill"></div></div>
+    </div>
+  </div>
+
+  <!-- شاشة التحقق -->
+  <section id="verifySection" class="verify-section">
+    <div class="verify-bg-shape shape-1"></div>
+    <div class="verify-bg-shape shape-2"></div>
+    <div class="verify-bg-shape shape-3"></div>
+    
+    <div class="container">
+      <div class="verify-wrapper">
+        <div class="verify-card">
+          <div class="verify-header">
+            <div class="brand-badge">
+              <span class="brand-diamond">&#9670;</span>
+            </div>
+            <h1 class="brand-title">برنامج مدار</h1>
+            <div class="brand-divider">
+              <span></span><span class="divider-dot">&#9670;</span><span></span>
+            </div>
+            <h2 class="brand-subtitle">كامب جذور</h2>
+            <p class="brand-org">رابطة طلاب جامعة المنصورة</p>
+          </div>
+
+          <div class="verify-body">
+            <div class="verify-icon">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M9 12l2 2 4-4"/>
+                <rect x="3" y="3" width="18" height="18" rx="3"/>
+              </svg>
+            </div>
+            <h3 class="verify-title">التحقق من الهوية</h3>
+            <p class="verify-desc">أدخل رقمك القومي للمتابعة مع التسجيل</p>
+
+            <form id="verifyForm" class="verify-form">
+              <div class="input-group-fancy">
+                <input type="text" id="nationalIdInput" class="input-field" 
+                       placeholder="الرقم القومي" maxlength="14" inputmode="numeric" autocomplete="off">
+                <div class="input-focus-line"></div>
+              </div>
+              <button type="submit" id="verifyBtn" class="btn-primary-fancy">
+                <span class="btn-text">تحقق</span>
+                <span class="btn-loader d-none">
+                  <span class="spinner"></span>
+                </span>
+              </button>
+            </form>
+
+            <div id="verifyResult" class="verify-result d-none"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- شاشة الاستمارة -->
+  <section id="formSection" class="form-section d-none">
+    <div class="form-bg-shape fshape-1"></div>
+    <div class="form-bg-shape fshape-2"></div>
+
+    <div class="container">
+      <!-- الهيدر -->
+      <div class="form-header">
+        <div class="form-header-brand">
+          <span class="brand-diamond-sm">&#9670;</span>
+          <span>برنامج مدار | كامب جذور</span>
+        </div>
+        <div class="form-header-progress">
+          <span id="stepIndicator">الخطوة 1 من 7</span>
+          <div class="progress-fancy">
+            <div id="progressBar" class="progress-fill" style="width: 14.28%"></div>
+          </div>
+        </div>
+      </div>
+
+      <form id="registrationForm" class="registration-form">
+        
+        <!-- الخطوة 1: البيانات الشخصية -->
+        <div class="form-step active" data-step="1">
+          <div class="step-header">
+            <div class="step-number">01</div>
+            <h3 class="step-title">البيانات الشخصية</h3>
+            <p class="step-desc">أدخل بياناتك الشخصية بشكل صحيح</p>
+          </div>
+          <div class="step-body">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <div class="form-floating-custom">
+                  <label>الاسم الرباعي <span class="req">*</span></label>
+                  <input type="text" name="fullName" class="form-input" placeholder="محمد أحمد عبداللهمحمد" required>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-floating-custom">
+                  <label>الرقم القومي <span class="req">*</span></label>
+                  <input type="text" name="nationalId" class="form-input" maxlength="14" inputmode="numeric" readonly>
+                  <span class="field-locked">تم التحقق</span>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-floating-custom">
+                  <label>رقم الهاتف <span class="req">*</span></label>
+                  <input type="tel" name="phone" class="form-input" placeholder="01xxxxxxxxx" maxlength="11" inputmode="numeric" required>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-floating-custom">
+                  <label>رقم الواتساب</label>
+                  <input type="tel" name="whatsapp" class="form-input" placeholder="01xxxxxxxxx" maxlength="11" inputmode="numeric">
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-floating-custom">
+                  <label>البريد الإلكتروني <span class="req">*</span></label>
+                  <input type="email" name="email" class="form-input" placeholder="example@email.com" required>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-floating-custom">
+                  <label>المحافظة <span class="req">*</span></label>
+                  <select name="governorate" class="form-input form-select" required>
+                    <option value="">اختر المحافظة</option>
+                    <option>القاهرة</option><option>الإسكندرية</option><option>بورسعيد</option>
+                    <option>السويس</option><option>دمياط</option><option>الدقهلية</option>
+                    <option>الشرقية</option><option>القليوبية</option><option>كفر الشيخ</option>
+                    <option>الغربية</option><option>المنوفية</option><option>البحيرة</option>
+                    <option>الإسماعيلية</option><option>الجيزة</option><option>بني سويف</option>
+                    <option>الفيوم</option><option>المنيا</option><option>أسيوط</option>
+                    <option>سوهاج</option><option>قنا</option><option>أسوان</option>
+                    <option>الأقصر</option><option>البحر الأحمر</option><option>الوادي الجديد</option>
+                    <option>مطروح</option><option>شمال سيناء</option><option>جنوب سيناء</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-floating-custom">
+                  <label>الجامعة <span class="req">*</span></label>
+                  <select name="university" class="form-input form-select" required>
+                    <option value="">اختر الجامعة</option>
+                    <option>جامعة المنصورة</option><option>جامعة السويس</option>
+                    <option>جامعة قناة السويس</option><option>جامعة بنها</option>
+                    <option>جامعة الأزهر بالقاهرة</option><option>جامعة MTI</option>
+                    <option>جامعة المنيا</option><option>جامعة بني سويف</option>
+                    <option>جامعة أسيوط</option><option>جامعة أسوان</option>
+                    <option>جامعة قنا</option><option>جامعة سوهاج</option>
+                    <option>جامعة المعهد العاشر فرع مطروح</option><option>جامعة المعهد العاشر</option>
+                    <option>جامعة المنوفية</option><option>جامعة طنطا</option>
+                    <option>جامعة طيبة التكنولوجية</option><option>جامعة Sphinx</option>
+                    <option>جامعة الأقصر الحكومية</option><option>جامعة الأقصر الأهلية</option>
+                    <option>جامعة سيناء</option><option>جامعة العريش</option>
+                    <option>جامعة EST</option><option>جامعة مطروح</option>
+                    <option>جامعة الوادى الجديد</option><option>جامعة تفهنا فرع الأزهر</option>
+                    <option>جامعة الأقصر فرع الأزهر</option><option>معهد القاهرة العالى الجديد</option>
+                    <option>جامعة اللوتس</option>
+                    <option>المعهد التكنولوچى العالى للعلوم التطبيقية</option>
+                    <option>المعهد العالى للخدمة الإجتماعية باسوان</option>
+                    <option>جامعة القاهرة</option><option>جامعة الأهرام الكندية</option>
+                    <option>المعهد العالي للهندسة بالأقصر</option><option>جامعة المنوفية الأهلية</option>
+                    <option>جامعة المنصورة الأهلية</option><option>جامعة الزقازيق</option>
+                    <option>جامعة ميريت دول الجامعات</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-floating-custom">
+                  <label>الكلية <span class="req">*</span></label>
+                  <input type="text" name="faculty" class="form-input" placeholder="كلية الهندسة" required>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-floating-custom">
+                  <label>الفرقة الدراسية <span class="req">*</span></label>
+                  <select name="studyYear" class="form-input form-select" required>
+                    <option value="">اختر الفرقة</option>
+                    <option>الأولى</option><option>الثانية</option><option>الثالثة</option>
+                    <option>الرابعة</option><option>الخامسة</option><option>خريج</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-floating-custom">
+                  <label>الجامعة المشارك بها بأسر صناع الحياة</label>
+                  <input type="text" name="lifeMakersUniversity" class="form-input" placeholder="اسم الجامعة">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- الخطوة 2: العضوية والكتابة -->
+        <div class="form-step" data-step="2">
+          <div class="step-header">
+            <div class="step-number">02</div>
+            <h3 class="step-title">العضوية والكتابة</h3>
+            <p class="step-desc">معلومات عضويتك الحالية والعمل داخل الكيان</p>
+          </div>
+          <div class="step-body">
+            <div class="form-floating-custom">
+              <label>هل أنت عضو حالي؟ <span class="req">*</span></label>
+              <div class="radio-group">
+                <label class="radio-card">
+                  <input type="radio" name="isCurrentMember" value="نعم">
+                  <span class="radio-mark"></span>
+                  <span>نعم</span>
+                </label>
+                <label class="radio-card">
+                  <input type="radio" name="isCurrentMember" value="لا" checked>
+                  <span class="radio-mark"></span>
+                  <span>لا</span>
+                </label>
+              </div>
+            </div>
+
+            <div id="memberFields" class="member-fields d-none">
+              <div class="section-divider">
+                <span>بيانات العمل داخل الكيان</span>
+              </div>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <div class="form-floating-custom">
+                    <label>الأسرة</label>
+                    <input type="text" name="family" class="form-input" placeholder="اسم الأسرة">
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-floating-custom">
+                    <label>اللجنة</label>
+                    <input type="text" name="committee" class="form-input" placeholder="اسم اللجنة">
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-floating-custom">
+                    <label>المنصب الحالي</label>
+                    <select name="currentPosition" class="form-input form-select">
+                      <option value="">اختر المنصب</option>
+                      <option>مسؤول لجنة</option>
+                      <option>نائب مسؤول</option>
+                      <option>عضو</option>
+                      <option>متطوع جديد</option>
+                      <option>مرشح لمنصب</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-floating-custom">
+                    <label>سنة الانضمام</label>
+                    <input type="text" name="joinYear" class="form-input" placeholder="2024">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- الخطوة 3: الحضور والدوافع -->
+        <div class="form-step" data-step="3">
+          <div class="step-header">
+            <div class="step-number">03</div>
+            <h3 class="step-title">الحضور والدوافع</h3>
+            <p class="step-desc">معلومات حضورك ودوافعك من الانضمام</p>
+          </div>
+          <div class="step-body">
+            <div class="form-floating-custom">
+              <label>هل حضرت برامج تدريبية سابقاً؟ <span class="req">*</span></label>
+              <div class="radio-group">
+                <label class="radio-card">
+                  <input type="radio" name="attendedTraining" value="نعم">
+                  <span class="radio-mark"></span>
+                  <span>نعم</span>
+                </label>
+                <label class="radio-card">
+                  <input type="radio" name="attendedTraining" value="لا" checked>
+                  <span class="radio-mark"></span>
+                  <span>لا</span>
+                </label>
+              </div>
+            </div>
+            <div id="trainingNameField" class="d-none">
+              <div class="form-floating-custom">
+                <label>اسم البرنامج <span class="req">*</span></label>
+                <input type="text" name="trainingProgramName" class="form-input" placeholder="اسم البرنامج التدريبي">
+              </div>
+            </div>
+
+            <div class="section-divider"><span>الحضور</span></div>
+
+            <div class="form-floating-custom">
+              <label>هل ستحضر جميع أيام البرنامج؟ <span class="req">*</span></label>
+              <div class="radio-group">
+                <label class="radio-card">
+                  <input type="radio" name="willAttendAllDays" value="نعم">
+                  <span class="radio-mark"></span>
+                  <span>نعم</span>
+                </label>
+                <label class="radio-card">
+                  <input type="radio" name="willAttendAllDays" value="لا">
+                  <span class="radio-mark"></span>
+                  <span>لا</span>
+                </label>
+              </div>
+            </div>
+            <div id="absentDaysField" class="d-none">
+              <div class="form-floating-custom">
+                <label>ما الأيام التي قد تتغيب فيها؟ <span class="req">*</span></label>
+                <input type="text" name="absentDays" class="form-input" placeholder="حدد الأيام">
+              </div>
+            </div>
+            <div class="form-floating-custom mt-3">
+              <label class="checkbox-card">
+                <input type="checkbox" name="agree80Percent">
+                <span class="check-mark"></span>
+                <span>أوافق على الحضور 80% على الأقل من أيام البرنامج</span>
+              </label>
+            </div>
+
+            <div class="section-divider"><span>الدوافع</span></div>
+
+            <div class="form-floating-custom">
+              <label>لماذا ترغب في الانضمام للبرنامج؟ <span class="req">*</span></label>
+              <textarea name="whyJoin" class="form-input form-textarea" rows="3" placeholder="اكتب دوافعك..." required></textarea>
+            </div>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <div class="form-floating-custom">
+                  <label>أكثر مهارة تريد تطويرها <span class="req">*</span></label>
+                  <input type="text" name="desiredSkill" class="form-input" placeholder="المهارة" required>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-floating-custom">
+                  <label>أكبر تحدي تواجهه <span class="req">*</span></label>
+                  <input type="text" name="biggestChallenge" class="form-input" placeholder="التحدي" required>
+                </div>
+              </div>
+            </div>
+            <div class="form-floating-custom">
+              <label>ماذا تتوقع بعد انتهاء البرنامج؟ <span class="req">*</span></label>
+              <textarea name="expectations" class="form-input form-textarea" rows="3" placeholder="تطلعاتك..." required></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- الخطوة 4: التقييم -->
+        <div class="form-step" data-step="4">
+          <div class="step-header">
+            <div class="step-number">04</div>
+            <h3 class="step-title">التقييم</h3>
+            <p class="step-desc">قيّم مهاراتك ومهارات اللجان</p>
+          </div>
+          <div class="step-body">
+            <h4 class="sub-section-title">التقييم الذاتي</h4>
+            <p class="sub-section-desc">قيّم مهاراتك من 1 (ضعيف) إلى 5 (ممتاز)</p>
+            
+            <div class="assessment-grid">
+              <div class="assessment-item">
+                <span class="assessment-label">القيادة</span>
+                <div class="rating-group" data-name="selfAssessment.leadership">
+                  <label class="rating-star"><input type="radio" name="sa_leadership" value="1"><span>1</span></label>
+                  <label class="rating-star"><input type="radio" name="sa_leadership" value="2"><span>2</span></label>
+                  <label class="rating-star"><input type="radio" name="sa_leadership" value="3"><span>3</span></label>
+                  <label class="rating-star"><input type="radio" name="sa_leadership" value="4"><span>4</span></label>
+                  <label class="rating-star"><input type="radio" name="sa_leadership" value="5"><span>5</span></label>
+                </div>
+              </div>
+              <div class="assessment-item">
+                <span class="assessment-label">إدارة الفرق</span>
+                <div class="rating-group" data-name="selfAssessment.teamManagement">
+                  <label class="rating-star"><input type="radio" name="sa_teamManagement" value="1"><span>1</span></label>
+                  <label class="rating-star"><input type="radio" name="sa_teamManagement" value="2"><span>2</span></label>
+                  <label class="rating-star"><input type="radio" name="sa_teamManagement" value="3"><span>3</span></label>
+                  <label class="rating-star"><input type="radio" name="sa_teamManagement" value="4"><span>4</span></label>
+                  <label class="rating-star"><input type="radio" name="sa_teamManagement" value="5"><span>5</span></label>
+                </div>
+              </div>
+              <div class="assessment-item">
+                <span class="assessment-label">التواصل</span>
+                <div class="rating-group" data-name="selfAssessment.communication">
+                  <label class="rating-star"><input type="radio" name="sa_communication" value="1"><span>1</span></label>
+                  <label class="rating-star"><input type="radio" name="sa_communication" value="2"><span>2</span></label>
+                  <label class="rating-star"><input type="radio" name="sa_communication" value="3"><span>3</span></label>
+                  <label class="rating-star"><input type="radio" name="sa_communication" value="4"><span>4</span></label>
+                  <label class="rating-star"><input type="radio" name="sa_communication" value="5"><span>5</span></label>
+                </div>
+              </div>
+              <div class="assessment-item">
+                <span class="assessment-label">التخطيط</span>
+                <div class="rating-group" data-name="selfAssessment.planning">
+                  <label class="rating-star"><input type="radio" name="sa_planning" value="1"><span>1</span></label>
+                  <label class="rating-star"><input type="radio" name="sa_planning" value="2"><span>2</span></label>
+                  <label class="rating-star"><input type="radio" name="sa_planning" value="3"><span>3</span></label>
+                  <label class="rating-star"><input type="radio" name="sa_planning" value="4"><span>4</span></label>
+                  <label class="rating-star"><input type="radio" name="sa_planning" value="5"><span>5</span></label>
+                </div>
+              </div>
+              <div class="assessment-item">
+                <span class="assessment-label">عمل جماعي</span>
+                <div class="rating-group" data-name="selfAssessment.teamwork">
+                  <label class="rating-star"><input type="radio" name="sa_teamwork" value="1"><span>1</span></label>
+                  <label class="rating-star"><input type="radio" name="sa_teamwork" value="2"><span>2</span></label>
+                  <label class="rating-star"><input type="radio" name="sa_teamwork" value="3"><span>3</span></label>
+                  <label class="rating-star"><input type="radio" name="sa_teamwork" value="4"><span>4</span></label>
+                  <label class="rating-star"><input type="radio" name="sa_teamwork" value="5"><span>5</span></label>
+                </div>
+              </div>
+              <div class="assessment-item">
+                <span class="assessment-label">إدارة الوقت</span>
+                <div class="rating-group" data-name="selfAssessment.timeManagement">
+                  <label class="rating-star"><input type="radio" name="sa_timeManagement" value="1"><span>1</span></label>
+                  <label class="rating-star"><input type="radio" name="sa_timeManagement" value="2"><span>2</span></label>
+                  <label class="rating-star"><input type="radio" name="sa_timeManagement" value="3"><span>3</span></label>
+                  <label class="rating-star"><input type="radio" name="sa_timeManagement" value="4"><span>4</span></label>
+                  <label class="rating-star"><input type="radio" name="sa_timeManagement" value="5"><span>5</span></label>
+                </div>
+              </div>
+              <div class="assessment-item">
+                <span class="assessment-label">حل المشكلات</span>
+                <div class="rating-group" data-name="selfAssessment.problemSolving">
+                  <label class="rating-star"><input type="radio" name="sa_problemSolving" value="1"><span>1</span></label>
+                  <label class="rating-star"><input type="radio" name="sa_problemSolving" value="2"><span>2</span></label>
+                  <label class="rating-star"><input type="radio" name="sa_problemSolving" value="3"><span>3</span></label>
+                  <label class="rating-star"><input type="radio" name="sa_problemSolving" value="4"><span>4</span></label>
+                  <label class="rating-star"><input type="radio" name="sa_problemSolving" value="5"><span>5</span></label>
+                </div>
+              </div>
+              <div class="assessment-item">
+                <span class="assessment-label">إدارة الفعاليات</span>
+                <div class="rating-group" data-name="selfAssessment.eventManagement">
+                  <label class="rating-star"><input type="radio" name="sa_eventManagement" value="1"><span>1</span></label>
+                  <label class="rating-star"><input type="radio" name="sa_eventManagement" value="2"><span>2</span></label>
+                  <label class="rating-star"><input type="radio" name="sa_eventManagement" value="3"><span>3</span></label>
+                  <label class="rating-star"><input type="radio" name="sa_eventManagement" value="4"><span>4</span></label>
+                  <label class="rating-star"><input type="radio" name="sa_eventManagement" value="5"><span>5</span></label>
+                </div>
+              </div>
+              <div class="assessment-item">
+                <span class="assessment-label">المتابعة والتقييم</span>
+                <div class="rating-group" data-name="selfAssessment.followUp">
+                  <label class="rating-star"><input type="radio" name="sa_followUp" value="1"><span>1</span></label>
+                  <label class="rating-star"><input type="radio" name="sa_followUp" value="2"><span>2</span></label>
+                  <label class="rating-star"><input type="radio" name="sa_followUp" value="3"><span>3</span></label>
+                  <label class="rating-star"><input type="radio" name="sa_followUp" value="4"><span>4</span></label>
+                  <label class="rating-star"><input type="radio" name="sa_followUp" value="5"><span>5</span></label>
+                </div>
+              </div>
+            </div>
+
+            <div class="section-divider"><span>تقييم مهارات اللجان</span></div>
+            <p class="sub-section-desc">قيّم مهارات كل لجنة من 1 إلى 5 (سيتم تحميل اللجان من النظام)</p>
+            <div id="committeeSkillsContainer" class="committee-skills-container">
+              <div class="text-muted text-center py-3">جاري تحميل مهارات اللجان...</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- الخطوة 5: المنصب والاحتياجات -->
+        <div class="form-step" data-step="5">
+          <div class="step-header">
+            <div class="step-number">05</div>
+            <h3 class="step-title">المنصب والاحتياجات</h3>
+            <p class="step-desc">تفضيلاتك واحتياجاتك التدريبية</p>
+          </div>
+          <div class="step-body">
+            <div class="form-floating-custom">
+              <label>هل ترغب في تولي منصب قيادي؟ <span class="req">*</span></label>
+              <div class="radio-group">
+                <label class="radio-card">
+                  <input type="radio" name="wantLeadershipPosition" value="نعم">
+                  <span class="radio-mark"></span>
+                  <span>نعم</span>
+                </label>
+                <label class="radio-card">
+                  <input type="radio" name="wantLeadershipPosition" value="لا">
+                  <span class="radio-mark"></span>
+                  <span>لا</span>
+                </label>
+                <label class="radio-card">
+                  <input type="radio" name="wantLeadershipPosition" value="لم أحدد بعد" checked>
+                  <span class="radio-mark"></span>
+                  <span>لم أحدد بعد</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="section-divider"><span>الاحتياجات التدريبية</span></div>
+            <p class="sub-section-desc">اختر احتياجاتك التدريبية</p>
+            
+            <div id="trainingNeedsContainer" class="checkbox-grid">
+              <label class="checkbox-card"><input type="checkbox" name="trainingNeeds" value="القيادة"><span class="check-mark"></span><span>القيادة</span></label>
+              <label class="checkbox-card"><input type="checkbox" name="trainingNeeds" value="إدارة الفرق"><span class="check-mark"></span><span>إدارة الفرق</span></label>
+              <label class="checkbox-card"><input type="checkbox" name="trainingNeeds" value="التخطيط"><span class="check-mark"></span><span>التخطيط</span></label>
+              <label class="checkbox-card"><input type="checkbox" name="trainingNeeds" value="الموارد البشرية"><span class="check-mark"></span><span>الموارد البشرية</span></label>
+              <label class="checkbox-card"><input type="checkbox" name="trainingNeeds" value="العلاقات العامة"><span class="check-mark"></span><span>العلاقات العامة</span></label>
+              <label class="checkbox-card"><input type="checkbox" name="trainingNeeds" value="الإعلام"><span class="check-mark"></span><span>الإعلام</span></label>
+              <label class="checkbox-card"><input type="checkbox" name="trainingNeeds" value="التدريب"><span class="check-mark"></span><span>التدريب</span></label>
+              <label class="checkbox-card"><input type="checkbox" name="trainingNeeds" value="تنظيم الفعاليات"><span class="check-mark"></span><span>تنظيم الفعاليات</span></label>
+            </div>
+
+            <div class="section-divider"><span>احتياجات مخصصة للجان</span></div>
+            <p class="sub-section-desc">احتياجات خاصة بكل لجنة (سيتم تحميلها من النظام)</p>
+            <div id="committeeNeedsContainer" class="checkbox-grid">
+              <div class="text-muted text-center py-3">جاري التحميل...</div>
+            </div>
+
+            <div class="form-floating-custom">
+              <label>احتياجات أخرى</label>
+              <textarea name="otherNeeds" class="form-input form-textarea" rows="2" placeholder="أي احتياجات أخرى..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- الخطوة 6: المعلومات التنظيمية -->
+        <div class="form-step" data-step="6">
+          <div class="step-header">
+            <div class="step-number">06</div>
+            <h3 class="step-title">المعلومات التنظيمية</h3>
+            <p class="step-desc">المعدات والمهارات التقنية المتاحة لديك</p>
+          </div>
+          <div class="step-body">
+            <div class="form-floating-custom">
+              <label>هل تمتلك Laptop؟ <span class="req">*</span></label>
+              <div class="radio-group">
+                <label class="radio-card"><input type="radio" name="hasLaptop" value="true"><span class="radio-mark"></span><span>نعم</span></label>
+                <label class="radio-card"><input type="radio" name="hasLaptop" value="false"><span class="radio-mark"></span><span>لا</span></label>
+              </div>
+            </div>
+            <div class="form-floating-custom">
+              <label>هل تمتلك هاتف ذكي؟ <span class="req">*</span></label>
+              <div class="radio-group">
+                <label class="radio-card"><input type="radio" name="hasSmartphone" value="true"><span class="radio-mark"></span><span>نعم</span></label>
+                <label class="radio-card"><input type="radio" name="hasSmartphone" value="false"><span class="radio-mark"></span><span>لا</span></label>
+              </div>
+            </div>
+            <div class="form-floating-custom">
+              <label>هل لديك Gmail؟ <span class="req">*</span></label>
+              <div class="radio-group">
+                <label class="radio-card"><input type="radio" name="hasGmail" value="true"><span class="radio-mark"></span><span>نعم</span></label>
+                <label class="radio-card"><input type="radio" name="hasGmail" value="false"><span class="radio-mark"></span><span>لا</span></label>
+              </div>
+            </div>
+
+            <div class="section-divider"><span>هل تستطيع استخدام؟</span></div>
+            <div class="checkbox-grid">
+              <label class="checkbox-card"><input type="checkbox" name="canGoogleDrive" value="true"><span class="check-mark"></span><span>Google Drive</span></label>
+              <label class="checkbox-card"><input type="checkbox" name="canGoogleSheets" value="true"><span class="check-mark"></span><span>Google Sheets</span></label>
+              <label class="checkbox-card"><input type="checkbox" name="canGoogleForms" value="true"><span class="check-mark"></span><span>Google Forms</span></label>
+              <label class="checkbox-card"><input type="checkbox" name="canCanva" value="true"><span class="check-mark"></span><span>Canva</span></label>
+            </div>
+
+            <div class="form-floating-custom">
+              <label>كيف تصف جودة الإنترنت عندك؟ <span class="req">*</span></label>
+              <select name="internetQuality" class="form-input form-select" required>
+                <option value="">اختر</option>
+                <option>ممتاز</option>
+                <option>جيد جداً</option>
+                <option>جيد</option>
+                <option>مقبول</option>
+                <option>ضعيف</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- الخطوة 7: التراك والتقديم -->
+        <div class="form-step" data-step="7">
+          <div class="step-header">
+            <div class="step-number">07</div>
+            <h3 class="step-title">اختيار التراك والإقرار</h3>
+            <p class="step-desc">اختر لجنتك المفضلة وأكمل التسجيل</p>
+          </div>
+          <div class="step-body">
+            <div class="form-floating-custom">
+              <label>اختر لجنتين كحد أقصى <span class="req">*</span></label>
+              <p class="field-hint">يمكنك اختيار لجنة واحدة أو لجنتين فقط</p>
+              <div id="tracksContainer" class="tracks-container">
+                <div class="text-muted text-center py-3">جاري تحميل اللجان...</div>
+              </div>
+            </div>
+            <div id="trackError" class="field-error d-none"></div>
+
+            <div class="section-divider"><span>ماذا يمكنك أن تقدم؟</span></div>
+            <div class="checkbox-grid">
+              <label class="checkbox-card"><input type="checkbox" name="whatCanYouOffer" value="التدريب"><span class="check-mark"></span><span>التدريب</span></label>
+              <label class="checkbox-card"><input type="checkbox" name="whatCanYouOffer" value="التنظيم"><span class="check-mark"></span><span>التنظيم</span></label>
+              <label class="checkbox-card"><input type="checkbox" name="whatCanYouOffer" value="التصميم"><span class="check-mark"></span><span>التصميم</span></label>
+              <label class="checkbox-card"><input type="checkbox" name="whatCanYouOffer" value="التصوير"><span class="check-mark"></span><span>التصوير</span></label>
+              <label class="checkbox-card"><input type="checkbox" name="whatCanYouOffer" value="كتابة المحتوى"><span class="check-mark"></span><span>كتابة المحتوى</span></label>
+              <label class="checkbox-card"><input type="checkbox" name="whatCanYouOffer" value="العلاقات العامة"><span class="check-mark"></span><span>العلاقات العامة</span></label>
+              <label class="checkbox-card"><input type="checkbox" name="whatCanYouOffer" value="إدارة الفرق"><span class="check-mark"></span><span>إدارة الفرق</span></label>
+              <label class="checkbox-card"><input type="checkbox" name="whatCanYouOffer" value="التحليل"><span class="check-mark"></span><span>التحليل</span></label>
+              <label class="checkbox-card"><input type="checkbox" name="whatCanYouOffer" value="أخرى"><span class="check-mark"></span><span>أخرى</span></label>
+            </div>
+
+            <div class="section-divider"><span>الإقرار</span></div>
+            <div class="pledge-box">
+              <label class="checkbox-card pledge-check">
+                <input type="checkbox" name="pledge" id="pledgeCheckbox">
+                <span class="check-mark"></span>
+                <span>أتعهد بالالتزام بجميع قواعد وأنظمة البرنامج، والحضور المنتظم، والمشاركة الفعالة طوال فترة البرنامج، وأتحمل المسؤولية الكاملة تجاه أي مخالفة لهذه الإلتزامات.</span>
+              </label>
+            </div>
+            <div id="pledgeError" class="field-error d-none"></div>
+
+            <button type="submit" id="submitBtn" class="btn-primary-fancy btn-submit" disabled>
+              <span class="btn-text">إرسال التسجيل</span>
+              <span class="btn-loader d-none">
+                <span class="spinner"></span>
+              </span>
+            </button>
+          </div>
+        </div>
+
+        <!-- أزرار التنقل -->
+        <div class="step-navigation">
+          <button type="button" id="prevBtn" class="btn-nav btn-prev d-none">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5l7 7-7 7"/></svg>
+            السابق
+          </button>
+          <button type="button" id="nextBtn" class="btn-nav btn-next">
+            التالي
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5l-7 7 7 7"/></svg>
+          </button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- شاشة النجاح -->
+  <section id="successSection" class="success-section d-none">
+    <div class="success-bg-shape shape-1"></div>
+    <div class="success-bg-shape shape-2"></div>
+    <div class="container">
+      <div class="success-wrapper">
+        <div class="success-card">
+          <div class="success-icon">
+            <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+              <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+          </div>
+          <h2 class="success-title">تم التسجيل بنجاح!</h2>
+          <p class="success-desc">شكراً لك! تم استلام تسجيلك بنجاح.<br>سيتم التواصل معك قريباً عبر البريد الإلكتروني.</p>
+          <div class="success-divider"></div>
+          <p class="success-note">تم إرسال بريد تأكيد إلى بريدك الإلكتروني.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="config.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1062,8 +1062,20 @@ body {
     flex-direction: column;
   }
   .verify-photo-side {
-    display: none;
+    flex: none;
+    height: 260px;
+    overflow: hidden;
   }
+  .verify-photo-side .verify-hero-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .verify-photo-overlay {
+    background: linear-gradient(180deg, rgba(1, 47, 82, 0.3) 0%, rgba(1, 73, 118, 0.6) 100%);
+  }
+  .verify-photo-title { font-size: 28px; }
+  .verify-photo-subtitle { font-size: 18px; }
   .verify-form-side {
     padding: 32px 20px;
   }
@@ -1138,4 +1150,86 @@ body {
 }
 .swal2-confirm {
   background: var(--blue) !important;
+}
+
+/* ============================================
+   Dark Mode
+   ============================================ */
+@media (prefers-color-scheme: dark) {
+  body {
+    background: #1a1a2e;
+    color: #e0e0e0;
+  }
+  .verify-form-side {
+    background: #1a1a2e;
+  }
+  .verify-photo-overlay {
+    background: linear-gradient(180deg, rgba(10, 10, 20, 0.5) 0%, rgba(10, 10, 20, 0.7) 100%);
+  }
+  .brand-logo {
+    background: rgba(255,255,255,0.95);
+    border-radius: 50%;
+    padding: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  }
+  .brand-title { color: #ffffff; }
+  .brand-subtitle { color: var(--orange); }
+  .brand-org { color: rgba(255,255,255,0.6); }
+  .verify-title { color: #ffffff; }
+  .verify-desc { color: rgba(255,255,255,0.5); }
+  .verify-icon { background: rgba(1, 73, 118, 0.2); color: var(--blue-light); }
+  .input-field {
+    background: #2a2a3e;
+    border-color: #3a3a50;
+    color: #fff;
+  }
+  .input-field:focus {
+    background: #2a2a3e;
+    border-color: var(--blue-light);
+  }
+  .form-section { background: #1a1a2e; }
+  .step-body { background: #252540; }
+  .form-floating-custom > label { color: #b0b0c0; }
+  .form-input {
+    background: #2a2a3e;
+    border-color: #3a3a50;
+    color: #fff;
+  }
+  .form-input:focus {
+    background: #2a2a3e;
+    border-color: var(--blue-light);
+  }
+  .radio-card {
+    background: #2a2a3e;
+    border-color: #3a3a50;
+    color: #e0e0e0;
+  }
+  .checkbox-card {
+    background: #2a2a3e;
+    border-color: #3a3a50;
+    color: #e0e0e0;
+  }
+  .section-divider span { color: var(--orange); }
+  .step-number {
+    background: linear-gradient(135deg, var(--blue-light), var(--orange));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .step-title { color: #fff; }
+  .form-header {
+    background: rgba(26, 26, 46, 0.9);
+    border-color: #3a3a50;
+  }
+  .form-header-brand { color: var(--orange); }
+  .success-section { background: #1a1a2e; }
+  .success-card { background: #252540; }
+  .success-title { color: #fff; }
+  .success-desc { color: rgba(255,255,255,0.7); }
+  .success-note { color: rgba(255,255,255,0.5); }
+  .verify-result.error { background: rgba(192, 57, 43, 0.15); }
+  .verify-result.not-found { background: rgba(141, 110, 8, 0.15); }
+  .verify-result.duplicate { background: rgba(192, 57, 43, 0.15); }
+  .pledge-box { background: #252540; border-color: #3a3a50; }
+  .field-error { background: rgba(192, 57, 43, 0.15); border-color: rgba(192, 57, 43, 0.3); }
+  .field-locked { background: rgba(1, 73, 118, 0.2); color: var(--blue-light); }
 }

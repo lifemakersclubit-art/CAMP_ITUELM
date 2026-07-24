@@ -135,7 +135,7 @@ body {
 
 /* الجانب الأيسر - الصورة */
 .verify-photo-side {
-  flex: 1;
+  flex: 1.4;
   position: relative;
   overflow: hidden;
   display: flex;
@@ -189,7 +189,7 @@ body {
 
 /* الجانب الأيمن - النموذج */
 .verify-form-side {
-  flex: 1;
+  flex: 0.6;
   display: flex;
   align-items: center;
   justify-content: center;

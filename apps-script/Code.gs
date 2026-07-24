@@ -1,7 +1,7 @@
 /**
  * ============================================================
  * نظام تسجيل برنامج مدار | كامب جذور
- * رابطة طلاب جامعة المنصورة
+ * رابطة أسر صناع الحياة بالجامعات المصرية
  * 
  * ملف واحد مدمج - انسخه في Code.gs واحد فقط
  * ============================================================
@@ -14,7 +14,7 @@
 var MAIN_SHEET_ID = '1V-U6PRLJ5mYH5KC2wm0A7HaEIiAvqtFl8ddTKkVTFWA';
 var APPLICANTS_SHEET_ID = '1QhtcTQZ0jj6pYrrdsN0tghfN7mpebXUxy5t_qEDO8Io';
 var APPLICANTS_TAB_NAME = 'FULL DATA';
-var APPLICANTS_ID_COLUMN = 11; // العمود K
+var APPLICANTS_ID_COLUMNS = [11, 12]; // العمود K و L
 
 // ═══════════════════════════════════════════
 // البيانات الافتراضية للجان والمهارات
@@ -269,8 +269,8 @@ function validateNationalID(id) {
     return { valid: false, message: 'الرقم القومي مطلوب' };
   }
   var cleaned = String(id).trim();
-  if (!/^\d{14}$/.test(cleaned)) {
-    return { valid: false, message: 'الرقم القومي يجب أن يكون 14 رقم' };
+  if (!/^\d+$/.test(cleaned)) {
+    return { valid: false, message: 'الرقم القومي يجب أن يحتوي على أرقام فقط' };
   }
   return { valid: true, value: cleaned };
 }
@@ -418,11 +418,35 @@ function findNationalID(nationalId) {
     var lastRow = sheet.getLastRow();
     if (lastRow < 2) return null;
     
-    var range = sheet.getRange(2, APPLICANTS_ID_COLUMN, lastRow - 1, 1);
-    var values = range.getValues();
+    // البحث في العمود K أولاً
+    var rangeK = sheet.getRange(2, APPLICANTS_ID_COLUMNS[0], lastRow - 1, 1);
+    var valuesK = rangeK.getValues();
     
-    for (var i = 0; i < values.length; i++) {
-      var cellVal = String(values[i][0]).trim();
+    for (var i = 0; i < valuesK.length; i++) {
+      var cellVal = String(valuesK[i][0]).trim();
+      if (cellVal === nationalId) {
+        var row = i + 2;
+        var rowData = sheet.getRange(row, 1, 1, sheet.getLastColumn()).getValues()[0];
+        return {
+          found: true,
+          row: row,
+          data: {
+            nationalId: nationalId,
+            name: rowData[0] || '',
+            phone: rowData[1] || '',
+            university: rowData[2] || '',
+            status: rowData[3] || ''
+          }
+        };
+      }
+    }
+    
+    // البحث في العمود L إذا لم يُوجد في K
+    var rangeL = sheet.getRange(2, APPLICANTS_ID_COLUMNS[1], lastRow - 1, 1);
+    var valuesL = rangeL.getValues();
+    
+    for (var i = 0; i < valuesL.length; i++) {
+      var cellVal = String(valuesL[i][0]).trim();
       if (cellVal === nationalId) {
         var row = i + 2;
         var rowData = sheet.getRange(row, 1, 1, sheet.getLastColumn()).getValues()[0];
@@ -493,7 +517,6 @@ function saveRegistration(data) {
     data.university,
     data.faculty,
     data.studyYear,
-    data.lifeMakersUniversity || '',
     data.isCurrentMember || 'لا',
     data.family || '',
     data.committee || '',
@@ -547,7 +570,7 @@ function setupRegistrationHeaders(sheet) {
   var headers = [
     'Timestamp', 'National ID', 'Full Name', 'Phone', 'WhatsApp',
     'Email', 'Governorate', 'University', 'Faculty', 'Study Year',
-    'Life Makers University', 'Is Current Member', 'Family', 'Committee',
+    'Is Current Member', 'Family', 'Committee',
     'Current Position', 'Join Year', 'Attended Training',
     'Training Program Name', 'Will Attend All Days', 'Absent Days',
     'Agree 80%', 'Why Join', 'Desired Skill', 'Biggest Challenge',
@@ -750,13 +773,13 @@ function sendWelcomeEmail(data) {
   body += 'نتطلع للقائكم.\n\n';
   body += 'مع خالص التقدير والاحترام،\n';
   body += 'فريق برنامج مدار | كامب جذور\n';
-  body += 'رابطة طلاب جامعة المنصورة\n';
+  body += 'رابطة أسر صناع الحياة بالجامعات المصرية\n';
   body += '———————————————————\n';
   body += 'للتواصل معنا: rwaq@lifemakers.org';
   
   try {
     GmailApp.sendEmail(data.email, subject, body, {
-      name: 'كاب جذور - رابطة طلاب جامعة المنصورة'
+      name: 'كاب جذور - رابطة أسر صناع الحياة بالجامعات المصرية'
     });
     Logger.log('تم إرسال البريد الترحيبي إلى: ' + data.email);
     return true;

@@ -90,8 +90,8 @@
       return;
     }
 
-    if (!/^\d{14}$/.test(nationalId)) {
-      showVerifyResult('error', 'الرقم القومي يجب أن يكون 14 رقم');
+    if (!/^\d+$/.test(nationalId)) {
+      showVerifyResult('error', 'الرقم القومي يجب أن يحتوي على أرقام فقط');
       return;
     }
 
@@ -533,7 +533,6 @@
     data.university = getVal('university');
     data.faculty = getVal('faculty');
     data.studyYear = getVal('studyYear');
-    data.lifeMakersUniversity = getVal('lifeMakersUniversity');
 
     // العضوية
     data.isCurrentMember = getRadio('isCurrentMember');

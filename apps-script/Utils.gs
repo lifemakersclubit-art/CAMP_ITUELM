@@ -68,13 +68,13 @@ function sendWelcomeEmail(data) {
   body += 'نتطلع للقائكم.\n\n';
   body += 'مع خالص التقدير والاحترام،\n';
   body += 'فريق برنامج مدار | كامب جذور\n';
-  body += 'رابطة طلاب جامعة المنصورة\n';
+  body += 'رابطة أسر صناع الحياة بالجامعات المصرية\n';
   body += '———————————————————\n';
   body += 'لل التواصل معنا: rwaq@lifemakers.org';
   
   try {
     GmailApp.sendEmail(data.email, subject, body, {
-      name: 'كاب جذور - رابطة طلاب جامعة المنصورة'
+      name: 'كاب جذور - رابطة أسر صناع الحياة بالجامعات المصرية'
     });
     Logger.log('تم إرسال البريد الترحيبي إلى: ' + data.email);
     return true;

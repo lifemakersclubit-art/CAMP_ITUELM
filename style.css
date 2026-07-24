@@ -172,6 +172,14 @@ body {
 
 .verify-header { text-align: center; margin-bottom: 32px; }
 
+.brand-logo {
+  max-width: 120px;
+  height: auto;
+  margin: 0 auto 20px;
+  display: block;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(1, 73, 118, 0.2);
+}
 .brand-badge {
   width: 56px;
   height: 56px;

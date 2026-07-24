@@ -536,7 +536,6 @@
 
     // العضوية
     data.isCurrentMember = getRadio('isCurrentMember');
-    data.family = getVal('family');
     data.committee = getVal('committee');
     data.currentPosition = getVal('currentPosition');
     data.joinYear = getVal('joinYear');

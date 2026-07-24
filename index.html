@@ -243,14 +243,17 @@
               <div class="row g-3">
                 <div class="col-md-6">
                   <div class="form-floating-custom">
-                    <label>الأسرة</label>
-                    <input type="text" name="family" class="form-input" placeholder="اسم الأسرة">
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="form-floating-custom">
-                    <label>اللجنة</label>
-                    <input type="text" name="committee" class="form-input" placeholder="اسم اللجنة">
+                    <label>اللجنة <span class="req">*</span></label>
+                    <select name="committee" class="form-input form-select" required>
+                      <option value="">اختر اللجنة</option>
+                      <option value="IT">تقنية المعلومات (IT) - إعداد وصيانة الأنظمة التقنية والدعم الفني</option>
+                      <option value="HR">الموارد البشرية (HR) - التوظيف وإدارة الأعضاء وبناء الفرق</option>
+                      <option value="PR">العلاقات العامة (PR) - بناء العلاقات والتواصل مع الجهات الخارجية</option>
+                      <option value="ميديا">ميديا - التصوير والمونتاج وإدارة المحتوى الرقمي</option>
+                      <option value="تنمية وتدريب">تنمية وتدريب - تصميم وتنفيذ البرامج التدريبية وتطوير مهارات الأعضاء</option>
+                      <option value="تواصل ودعم">تواصل ودعم - خدمة المتقدمين والأعضاء والإجابة على الاستفسارات</option>
+                      <option value="جذب واستقبال">جذب واستقبال - استقطاب الأعضاء الجدد وتنظيم عملية التسجيل والقبول</option>
+                    </select>
                   </div>
                 </div>
                 <div class="col-md-6">
@@ -258,11 +261,11 @@
                     <label>المنصب الحالي</label>
                     <select name="currentPosition" class="form-input form-select">
                       <option value="">اختر المنصب</option>
-                      <option>مسؤول لجنة</option>
-                      <option>نائب مسؤول</option>
-                      <option>عضو</option>
-                      <option>متطوع جديد</option>
-                      <option>مرشح لمنصب</option>
+                      <option value="مسؤول لجنة">مسؤول لجنة - مسؤول عن إدارة اللجنة بالكامل والتخطيط والمتابعة</option>
+                      <option value="نائب مسؤول">نائب مسؤول - يساعد مسؤول اللجنة ويحل محله عند الغياب</option>
+                      <option value="عضو">عضو - يشارك في الأنشطة والمهام المطلوبة داخل اللجنة</option>
+                      <option value="متطوع جديد">متطوع جديد - انضم حديثاً ولم يُكلف بمنصب بعد</option>
+                      <option value="مرشح لمنصب">مرشح لمنصب - مرشح لتولي منصب قيادي في الفترات المقبلة</option>
                     </select>
                   </div>
                 </div>

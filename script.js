@@ -69,6 +69,9 @@
     $$('input[name="willAttendAllDays"]').forEach(r => {
       r.addEventListener('change', toggleAbsentDays);
     });
+    $$('input[name="whatCanYouOffer"]').forEach(r => {
+      r.addEventListener('change', toggleOtherCanOffer);
+    });
     $$('input[name="pledge"]').forEach(c => {
       c.addEventListener('change', toggleSubmitBtn);
     });
@@ -353,6 +356,17 @@
     }
   }
 
+  function toggleOtherCanOffer() {
+    const otherChecked = $('input[name="whatCanYouOffer"][value="أخرى"]');
+    const field = $('#otherCanOfferField');
+    if (!otherChecked || !field) return;
+    if (otherChecked.checked) {
+      field.classList.remove('d-none');
+    } else {
+      field.classList.add('d-none');
+    }
+  }
+
   // ============================================
   // التنقل بين الخطوات
   // ============================================
@@ -593,6 +607,11 @@
 
     // ماذا يمكنك أن تقدم
     data.whatCanYouOffer = getCheckedValues('whatCanYouOffer');
+    const otherOffer = getVal('otherCanOffer');
+    if (otherOffer) {
+      data.whatCanYouOffer = data.whatCanYouOffer.filter(function(v) { return v !== 'أخرى'; });
+      data.whatCanYouOffer.push(otherOffer);
+    }
 
     // الإقرار
     data.pledge = $('input[name="pledge"]') ? $('input[name="pledge"]').checked : false;

@@ -118,6 +118,12 @@
             updateProgress();
           }, 800);
 
+      } else if (response.status === 'reg_found') {
+        verifiedNationalId = '';
+        showVerifyResult('reg_found',
+          response.message,
+          '<div class="volunteer-link-box">' + buildFormLink('reg') + '</div>'
+        );
       } else if (response.status === 'not_found') {
         verifiedNationalId = '';
         showVerifyResult('not_found',
@@ -151,7 +157,7 @@
   }
 
   function showVerifyResult(type, message, extra) {
-    verifyResult.classList.remove('d-none', 'error', 'not-found', 'duplicate');
+    verifyResult.classList.remove('d-none', 'found', 'error', 'not-found', 'duplicate', 'reg_found');
 
     if (!type) {
       verifyResult.classList.add('d-none');
@@ -167,20 +173,27 @@
     if (!box) return;
 
     const isNew = answer === 'new';
-
-    const url = isNew
-      ? 'https://ee-eu.kobotoolbox.org/lnXsKATT'
-      : 'https://ee-eu.kobotoolbox.org/x/jIIg4IEe';
-    const title = isNew
-      ? 'سجل بياناتك في هذه الاستمارة من الرابط التالي:'
-      : 'سجل بياناتك في استمارة العضوية من الرابط التالي:';
+    const kind = isNew ? 'new' : 'reg';
 
     box.classList.remove('d-none');
     box.innerHTML =
-      '<p>' + title + '</p>' +
-      '<a href="' + url + '" target="_blank" rel="noopener noreferrer" class="btn-register-link">' +
-      'اذهب للتسجيل <span>&larr;</span></a>' +
+      buildFormLink(kind) +
       '<p class="volunteer-note">ملاحظة: بعد التسجيل في هذه الاستمارة، ارجع لصفحة كامب جذور وسجل من جديد بشكل طبيعي.</p>';
+  }
+
+  function buildFormLink(kind) {
+    const isReg = kind === 'reg';
+
+    const url = isReg
+      ? 'https://ee-eu.kobotoolbox.org/x/jIIg4IEe'
+      : 'https://ee-eu.kobotoolbox.org/lnXsKATT';
+    const title = isReg
+      ? 'سجل بياناتك في استمارة الضبط من الرابط التالي:'
+      : 'سجل بياناتك في استمارة الجذب من الرابط التالي:';
+
+    return '<p>' + title + '</p>' +
+      '<a href="' + url + '" target="_blank" rel="noopener noreferrer" class="btn-register-link">' +
+      'اذهب للتسجيل <span>&larr;</span></a>';
   }
 
   // ============================================

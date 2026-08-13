@@ -195,11 +195,21 @@ function handleCheckNationalID(data) {
   
   var result = findNationalID(nationalId);
   
-  if (!result || !result.found) {
-    return { status: 'not_found', message: 'لم يتم العثور على بياناتك ضمن المتقدمين للرابطة.' };
+  // موجود في الضبط (FULL DATA) → يدخل استمارة الكامب مباشرة
+  if (result && result.found && result.source === 'full') {
+    return { status: 'found', message: 'تم التحقق بنجاح' };
   }
   
-  return { status: 'found', message: 'تم التحقق بنجاح' };
+  // مش في الضبط بس موجود في REG → ياخد استمارة الضبط
+  if (result && result.found && result.source === 'reg') {
+    return {
+      status: 'reg_found',
+      message: 'تم العثور على بياناتك في سجل REG. أكمل بياناتك في استمارة الضبط:'
+    };
+  }
+  
+  // مش موجود في الاتنين → ياخد الجذب
+  return { status: 'not_found', message: 'لم يتم العثور على بياناتك ضمن المتقدمين للرابطة.' };
 }
 
 function handleGetMetadata() {
@@ -233,6 +243,9 @@ function handleSubmitRegistration(data) {
   if (!applicantCheck || !applicantCheck.found) {
     return { status: 'error', message: 'الرقم القومي غير مسجل في قائمة المتقدمين.' };
   }
+
+  // هينت في الشيت: جديد / من REG / قديم
+  data.applicantType = (applicantCheck.source === 'reg') ? 'من REG' : 'قديم';
   
   var validation = validateRegistration(data);
   if (!validation.valid) {
@@ -430,16 +443,16 @@ function getApplicantsSpreadsheet() {
 }
 
 function findNationalID(nationalId) {
-  var searchOrder = [
-    { tab: APPLICANTS_TAB_NAME, columns: APPLICANTS_ID_COLUMNS },
-    { tab: REG_TAB_NAME, columns: [1] }
-  ];
+  var fullResult = findInTab(APPLICANTS_TAB_NAME, APPLICANTS_ID_COLUMNS, nationalId);
+  if (fullResult && fullResult.found) {
+    fullResult.source = 'full';
+    return fullResult;
+  }
 
-  for (var s = 0; s < searchOrder.length; s++) {
-    var result = findInTab(searchOrder[s].tab, searchOrder[s].columns, nationalId);
-    if (result && result.found) {
-      return result;
-    }
+  var regResult = findInTab(REG_TAB_NAME, [1], nationalId);
+  if (regResult && regResult.found) {
+    regResult.source = 'reg';
+    return regResult;
   }
 
   return { found: false };
@@ -563,6 +576,7 @@ function saveRegistration(data) {
     data.track2 || '',
     JSON.stringify(data.whatCanYouOffer || []),
     data.pledge ? 'نعم' : 'لا',
+    data.applicantType || 'جديد',
     'مكتمل'
   ];
   
@@ -592,7 +606,7 @@ function setupRegistrationHeaders(sheet) {
     'Committee Specific Needs', 'Other Needs', 'Has Laptop',
     'Has Smartphone', 'Has Gmail', 'Google Drive', 'Google Sheets',
     'Google Forms', 'Canva', 'Internet Quality', 'Track 1', 'Track 2',
-    'What Can You Offer', 'Pledge', 'Status'
+    'What Can You Offer', 'Pledge', 'Applicant Type', 'Status'
   ];
   sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
   sheet.getRange(1, 1, 1, headers.length).setFontWeight('bold').setBackground('#014976').setFontColor('#FFFFFF');

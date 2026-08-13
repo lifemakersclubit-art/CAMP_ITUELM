@@ -373,6 +373,11 @@ body {
   color: #8D6E08;
   border: 1px solid #FFF3C4;
 }
+.verify-result.reg_found {
+  background: #E8F4FD;
+  color: #014976;
+  border: 1px solid #BFDCF0;
+}
 .verify-result.duplicate {
   background: #FFF3F3;
   color: #C0392B;

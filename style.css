@@ -157,7 +157,7 @@ body {
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 40px;
+  padding: 40px 40px 120px;
 }
 .verify-photo-title {
   font-family: var(--font-display);
@@ -212,20 +212,21 @@ body {
 }
 
 .brand-logo {
-  width: 74px;
-  height: 74px;
+  width: 72px;
+  height: 72px;
   object-fit: contain;
   display: block;
 }
 
 .brand-logo-wide {
-  width: 150px;
-  height: auto;
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
 }
 
 .photo-logo {
-  width: 110px;
-  height: 110px;
+  width: 72px;
+  height: 72px;
   object-fit: contain;
   background: rgba(255,255,255,0.95);
   border-radius: 50%;
@@ -1163,6 +1164,7 @@ body {
   }
   .verify-photo-overlay {
     background: linear-gradient(180deg, rgba(1, 47, 82, 0.3) 0%, rgba(1, 73, 118, 0.6) 100%);
+    padding: 20px 16px 64px;
   }
   .verify-photo-title { font-size: 28px; }
   .verify-photo-subtitle { font-size: 18px; }
@@ -1207,9 +1209,9 @@ body {
   .verify-form-side { padding: 24px 16px; }
   .brand-title { font-size: 22px; }
   .brand-logos { gap: 10px; margin-bottom: 16px; }
-  .brand-logo { width: 56px; height: 56px; }
-  .brand-logo-wide { width: 110px; height: auto; }
-  .photo-logo { width: 84px; height: 84px; margin-bottom: 20px; }
+  .brand-logo { width: 54px; height: 54px; }
+  .brand-logo-wide { width: 54px; height: 54px; }
+  .photo-logo { width: 54px; height: 54px; margin-bottom: 18px; }
 
   .checkbox-grid {
     grid-template-columns: 1fr;

@@ -207,20 +207,31 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 20px;
+  gap: 16px;
   margin-bottom: 20px;
 }
 
 .brand-logo {
-  width: 90px;
-  height: 90px;
+  width: 74px;
+  height: 74px;
   object-fit: contain;
   display: block;
 }
 
 .brand-logo-wide {
-  width: 170px;
+  width: 150px;
   height: auto;
+}
+
+.photo-logo {
+  width: 110px;
+  height: 110px;
+  object-fit: contain;
+  background: rgba(255,255,255,0.95);
+  border-radius: 50%;
+  padding: 8px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+  margin-bottom: 26px;
 }
 .brand-title {
   font-family: var(--font-display);
@@ -1195,9 +1206,10 @@ body {
 @media (max-width: 480px) {
   .verify-form-side { padding: 24px 16px; }
   .brand-title { font-size: 22px; }
-  .brand-logos { gap: 12px; margin-bottom: 16px; }
-  .brand-logo { width: 64px; height: 64px; }
-  .brand-logo-wide { width: 120px; height: auto; }
+  .brand-logos { gap: 10px; margin-bottom: 16px; }
+  .brand-logo { width: 56px; height: 56px; }
+  .brand-logo-wide { width: 110px; height: auto; }
+  .photo-logo { width: 84px; height: 84px; margin-bottom: 20px; }
 
   .checkbox-grid {
     grid-template-columns: 1fr;

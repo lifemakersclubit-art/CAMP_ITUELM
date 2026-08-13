@@ -614,8 +614,18 @@ function saveRegistration(data) {
   
   sheet.appendRow(row);
   
-  Logger.log('تم حفظ التسجيل في الصف: ' + sheet.getLastRow());
-  return { success: true, row: sheet.getLastRow() };
+  // التحقق الفعلي: قراءة الصف بعد الكتابة للتأكد من حفظ البيانات قبل إرجاع النجاح
+  var newRow = sheet.getLastRow();
+  var writtenNationalId = sheet.getRange(newRow, 2, 1, 1).getValue();
+  var expectedNationalId = String(data.nationalId);
+  var actualNationalId = String(writtenNationalId).trim().replace(/^'/, '');
+  
+  if (actualNationalId !== expectedNationalId) {
+    throw new Error('تعذر تأكيد حفظ البيانات في الشيت');
+  }
+  
+  Logger.log('تم حفظ التسجيل في الصف: ' + newRow);
+  return { success: true, row: newRow };
 }
 
 function setupRegistrationHeaders(sheet) {

@@ -122,7 +122,10 @@
         verifiedNationalId = '';
         showVerifyResult('reg_found',
           response.message,
-          '<div class="volunteer-link-box">' + buildFormLink('reg') + '</div>'
+          '<div class="volunteer-link-box">' +
+          '<a href="https://ee-eu.kobotoolbox.org/x/jIIg4IEe" target="_blank" rel="noopener noreferrer" class="btn-register-link">' +
+          'اذهب لاستكمال العضوية <span>&larr;</span></a>' +
+          '</div>'
         );
       } else if (response.status === 'not_found') {
         verifiedNationalId = '';

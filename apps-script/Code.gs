@@ -207,7 +207,7 @@ function handleCheckNationalID(data) {
   if (result && result.found && result.source === 'reg') {
     return {
       status: 'reg_found',
-      message: 'تم العثور على بياناتك في سجل REG. أكمل بياناتك في استمارة الضبط:'
+      message: 'تم العثور على بياناتك في قاعدة بيانات الجذب. لإتمام تسجيل عضويتك، يرجى استكمال استمارة ضبط العضوية من الرابط التالي:'
     };
   }
   

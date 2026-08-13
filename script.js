@@ -549,10 +549,13 @@
       const response = await apiCall('submitRegistration', data);
 
       if (response.status === 'success') {
-        // عرض شاشة النجاح
-        apiCall('sendWelcomeEmail', data).catch(function (e) {
-          console.error('خطأ في إرسال البريد الترحيبي:', e);
-        });
+        // البريد الترحيبي يرسل من الخادم فوراً ضمن طلب التسجيل نفسه بعد الحفظ في الشيت
+        const successNote = $('.success-note');
+        if (successNote) {
+          successNote.textContent = response.emailSent
+            ? 'تم إرسال بريد تأكيد إلى بريدك الإلكتروني.'
+            : 'تم استلام تسجيلك وسيتم التواصل معك قريباً.';
+        }
 
         // عرض شاشة النجاح
         formSection.classList.add('d-none');

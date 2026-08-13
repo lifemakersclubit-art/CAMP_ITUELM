@@ -274,19 +274,28 @@ function handleSubmitRegistration(data) {
   }
   
   var lock = acquireLock();
+  var savedRow;
   try {
     if (isDuplicate(nationalId)) {
       return { status: 'duplicate', message: 'لقد قمت بالتسجيل بالفعل. لا يمكن التسجيل مرة أخرى.' };
     }
-    var result = saveRegistration(data);
-    
-    return { status: 'success', message: 'تم التسجيل بنجاح! سيتم التواصل معك قريباً.', row: result.row };
+    savedRow = saveRegistration(data).row;
   } catch (e) {
     Logger.log('خطأ في حفظ التسجيل: ' + e.toString());
     return { status: 'error', message: 'حدث خطأ أثناء حفظ البيانات. يرجى المحاولة مرة أخرى.' };
   } finally {
     releaseLock(lock);
   }
+  
+  // إرسال البريد الترحيبي فوراً بعد تأكيد حفظ البيانات في الشيت
+  var emailSent = false;
+  try {
+    emailSent = sendWelcomeEmail(data);
+  } catch (e) {
+    Logger.log('خطأ في إرسال البريد الترحيبي: ' + e.toString());
+  }
+  
+  return { status: 'success', message: 'تم التسجيل بنجاح! سيتم التواصل معك قريباً.', row: savedRow, emailSent: emailSent };
 }
 
 function handleSendWelcomeEmail(data) {

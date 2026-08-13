@@ -827,7 +827,40 @@ function releaseLock(lock) {
 
 function sendWelcomeEmail(data) {
   var subject = 'تأكيد التسجيل - برنامج مدار | كامب جذور';
+  var htmlBody = buildWelcomeEmailHtml(data);
+  var textBody = buildWelcomeEmailText(data);
   
+  try {
+    GmailApp.sendEmail(data.email, subject, textBody, {
+      htmlBody: htmlBody,
+      name: 'كامب جذور - رابطة أسر صناع الحياة بالجامعات المصرية'
+    });
+    Logger.log('تم إرسال البريد الترحيبي');
+    return true;
+  } catch (e) {
+    Logger.log('خطأ في إرسال البريد: ' + e.toString());
+    return false;
+  }
+}
+
+function escapeHtml(value) {
+  return String(value === undefined || value === null ? '' : value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function emailSummaryRow(label, value, ltr) {
+  var dirStyle = ltr ? 'direction:ltr;text-align:right;' : '';
+  return '<tr>' +
+    '<td style="padding:9px 0;border-bottom:1px solid #EDEAE3;font-family:\'Tajawal\',Tahoma,sans-serif;font-size:13px;color:#5A6B7A;width:42%;">' + label + '</td>' +
+    '<td style="padding:9px 0;border-bottom:1px solid #EDEAE3;font-family:\'Tajawal\',Tahoma,sans-serif;font-size:13px;color:#0d2536;font-weight:700;' + dirStyle + '">' + value + '</td>' +
+    '</tr>';
+}
+
+function buildWelcomeEmailText(data) {
   var body = 'السيدة / السيد ' + data.fullName + '\n\n';
   body += 'السلام عليكم ورحمة الله وبركاته،\n\n';
   body += 'يسعدنا إبلاغكم بأنه قد تم استلام طلبكم بنجاح للتسجيل في برنامج مدار | كامب جذور.\n\n';
@@ -847,17 +880,113 @@ function sendWelcomeEmail(data) {
   body += 'رابطة أسر صناع الحياة بالجامعات المصرية\n';
   body += '———————————————————\n';
   body += 'للتواصل معنا: Lifemakersclub.it@gmail.com';
+  return body;
+}
+
+function buildWelcomeEmailHtml(data) {
+  var LOGO_MADAR = 'https://lifemakersclubit-art.github.io/CAMP_ITUELM/logo-madar.png';
+  var LOGO_BLUE = 'https://lifemakersclubit-art.github.io/CAMP_ITUELM/logo-blue.png';
+  var LOGO_JADOUR = 'https://lifemakersclubit-art.github.io/CAMP_ITUELM/logo-jadour.png';
+  var PHOTO = 'https://lifemakersclubit-art.github.io/CAMP_ITUELM/ITUELM_PHOTO.jpg';
   
-  try {
-    GmailApp.sendEmail(data.email, subject, body, {
-      name: 'كامب جذور - رابطة أسر صناع الحياة بالجامعات المصرية'
-    });
-    Logger.log('تم إرسال البريد الترحيبي');
-    return true;
-  } catch (e) {
-    Logger.log('خطأ في إرسال البريد: ' + e.toString());
-    return false;
-  }
+  var fullName = escapeHtml(data.fullName);
+  var nationalId = escapeHtml(data.nationalId);
+  var phone = escapeHtml(data.phone);
+  var email = escapeHtml(data.email);
+  var university = escapeHtml(data.university);
+  var governorate = escapeHtml(data.governorate);
+  
+  var summaryRows = '';
+  summaryRows += emailSummaryRow('الاسم بالكامل', fullName, false);
+  summaryRows += emailSummaryRow('الرقم القومي', nationalId, true);
+  summaryRows += emailSummaryRow('رقم الهاتف', phone, true);
+  summaryRows += emailSummaryRow('البريد الإلكتروني', email, true);
+  summaryRows += emailSummaryRow('المحافظة', governorate, false);
+  summaryRows += emailSummaryRow('الجامعة', university, false);
+  
+  return '' +
+  '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#E9E6DE;padding:28px 12px;">' +
+  '<tr><td align="center">' +
+  '<table role="presentation" width="620" cellpadding="0" cellspacing="0" style="max-width:620px;width:100%;background:#F4F3EF;border-radius:18px;overflow:hidden;box-shadow:0 24px 70px rgba(1,47,82,.22);">' +
+  
+  // شريط علوي برتقالي
+  '<tr><td height="6" style="height:6px;background:#FBAE42;"></td></tr>' +
+  
+  // الهيدر: اللوجوهات الثلاثة
+  '<tr><td align="center" style="background:#F4F3EF;padding:30px 20px 8px;">' +
+  '<table role="presentation" cellpadding="0" cellspacing="0">' +
+  '<tr>' +
+  '<td align="center" valign="middle" style="padding:0 9px;"><img src="' + LOGO_MADAR + '" width="72" height="72" alt="لوجو مدار" style="display:block;width:72px;height:72px;object-fit:contain;"></td>' +
+  '<td align="center" valign="middle" style="padding:0 9px;"><img src="' + LOGO_BLUE + '" width="88" height="88" alt="لوجو الرابطة" style="display:block;width:88px;height:88px;object-fit:contain;"></td>' +
+  '<td align="center" valign="middle" style="padding:0 9px;"><img src="' + LOGO_JADOUR + '" width="72" height="72" alt="لوجو جذور" style="display:block;width:72px;height:72px;object-fit:contain;"></td>' +
+  '</tr></table>' +
+  '<p style="font-family:\'Tajawal\',Tahoma,sans-serif;color:#5A6B7A;font-size:12px;margin:10px 0 0;letter-spacing:.3px;">رابطة أسر صناع الحياة بالجامعات المصرية</p>' +
+  '</td></tr>' +
+  
+  // الهيرو: صورة الأعضاء + اللوجو
+  '<tr><td align="center" style="background-image:linear-gradient(180deg,rgba(1,47,82,.82) 0%,rgba(1,73,118,.9) 55%,rgba(1,47,82,.94) 100%),url(\'' + PHOTO + '\');background-size:cover;background-position:center;background-color:#014976;padding:44px 20px 40px;">' +
+  '<table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto 22px;">' +
+  '<tr><td align="center" style="background:#ffffff;border-radius:50%;padding:10px;width:92px;height:92px;box-shadow:0 10px 30px rgba(0,0,0,.35);">' +
+  '<img src="' + LOGO_BLUE + '" width="92" height="92" alt="لوجو الرابطة" style="display:block;width:92px;height:92px;border-radius:50%;object-fit:contain;">' +
+  '</td></tr></table>' +
+  '<h1 style="margin:0;font-family:\'Cairo\',Tahoma,sans-serif;font-weight:900;font-size:38px;color:#ffffff;line-height:1.2;">برنامج مدار</h1>' +
+  '<table role="presentation" cellpadding="0" cellspacing="0" style="margin:14px auto;"><tr>' +
+  '<td width="42" style="height:3px;background:#FBAE42;border-radius:10px;"></td>' +
+  '<td width="10"></td>' +
+  '<td align="center" style="color:#FBAE42;font-size:11px;line-height:1;">&#9670;</td>' +
+  '<td width="10"></td>' +
+  '<td width="42" style="height:3px;background:#FBAE42;border-radius:10px;"></td>' +
+  '</tr></table>' +
+  '<h2 style="margin:0;font-family:\'Cairo\',Tahoma,sans-serif;font-weight:800;font-size:26px;color:#FBAE42;line-height:1.2;">كامب جذور</h2>' +
+  '<p style="margin:12px 0 0;font-family:\'Tajawal\',Tahoma,sans-serif;font-size:13px;color:rgba(255,255,255,.82);">تأكيد استلام طلب التسجيل</p>' +
+  '</td></tr>' +
+  
+  // المحتوى
+  '<tr><td style="background:#F4F3EF;padding:38px 34px 12px;">' +
+  '<p style="margin:0 0 6px;font-family:\'Cairo\',Tahoma,sans-serif;font-weight:800;font-size:20px;color:#014976;">السيدة / السيد ' + fullName + '</p>' +
+  '<p style="margin:0 0 20px;font-family:\'Tajawal\',Tahoma,sans-serif;font-size:14px;color:#3d4f5e;line-height:1.9;">السلام عليكم ورحمة الله وبركاته،<br>يسعدنا إبلاغكم بأنه <strong style="color:#014976;">قد تم استلام طلبكم بنجاح</strong> للتسجيل في برنامج مدار | كامب جذور.</p>' +
+  
+  // بطاقة ملخص البيانات
+  '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;border-right:5px solid #FBAE42;box-shadow:0 6px 24px rgba(1,47,82,.08);">' +
+  '<tr><td style="padding:20px 22px 4px;"><p style="margin:0 0 14px;font-family:\'Cairo\',Tahoma,sans-serif;font-weight:800;font-size:15px;color:#014976;">ملخص بيانات الطلب</p></td></tr>' +
+  '<tr><td style="padding:0 22px;">' +
+  '<table role="presentation" width="100%" cellpadding="0" cellspacing="0">' + summaryRows + '</table>' +
+  '</td></tr>' +
+  '<tr><td style="height:18px;"></td></tr>' +
+  '</table>' +
+  
+  '<p style="margin:24px 0 0;font-family:\'Tajawal\',Tahoma,sans-serif;font-size:14px;color:#3d4f5e;line-height:1.9;">سيتم مراجعة طلبكم والرد عليكم خلال الفترة المقبلة.<br>نتطلع للقائكم في برنامج مدار | كامب جذور.</p>' +
+  '<p style="margin:26px 0 0;font-family:\'Cairo\',Tahoma,sans-serif;font-weight:700;font-size:14px;color:#0d2536;">مع خالص التقدير والاحترام،</p>' +
+  '<p style="margin:4px 0 0;font-family:\'Cairo\',Tahoma,sans-serif;font-weight:800;font-size:15px;color:#014976;">فريق برنامج مدار | كامب جذور</p>' +
+  '</td></tr>' +
+  
+  // فاصل
+  '<tr><td align="center" style="background:#F4F3EF;padding:26px 20px 30px;">' +
+  '<table role="presentation" cellpadding="0" cellspacing="0"><tr>' +
+  '<td width="80" style="height:1px;background:linear-gradient(90deg,rgba(1,73,118,0),rgba(1,73,118,.35));"></td>' +
+  '<td align="center" style="padding:0 14px;color:#FBAE42;font-size:12px;">&#9670;</td>' +
+  '<td width="80" style="height:1px;background:linear-gradient(270deg,rgba(1,73,118,0),rgba(1,73,118,.35));"></td>' +
+  '</tr></table>' +
+  '</td></tr>' +
+  
+  // الفوتر: اللوجوهات في مستطيل أبيض
+  '<tr><td align="center" style="background:#ffffff;padding:42px 20px 36px;">' +
+  '<table role="presentation" cellpadding="0" cellspacing="0"><tr>' +
+  '<td align="center" valign="middle" style="padding:0 14px;"><img src="' + LOGO_MADAR + '" width="88" height="88" alt="لوجو مدار" style="display:block;width:88px;height:88px;object-fit:contain;"></td>' +
+  '<td align="center" valign="middle" style="padding:0 14px;"><img src="' + LOGO_BLUE + '" width="100" height="100" alt="لوجو الرابطة" style="display:block;width:100px;height:100px;object-fit:contain;"></td>' +
+  '<td align="center" valign="middle" style="padding:0 14px;"><img src="' + LOGO_JADOUR + '" width="88" height="88" alt="لوجو جذور" style="display:block;width:88px;height:88px;object-fit:contain;"></td>' +
+  '</tr></table>' +
+  '<p style="margin:24px 0 0;font-family:\'Cairo\',Tahoma,sans-serif;font-weight:800;font-size:16px;color:#014976;">برنامج مدار | كامب جذور</p>' +
+  '<p style="margin:6px 0 0;font-family:\'Tajawal\',Tahoma,sans-serif;font-size:13px;color:#5A6B7A;">رابطة أسر صناع الحياة بالجامعات المصرية</p>' +
+  '<p style="margin:14px 0 0;font-family:\'Tajawal\',Tahoma,sans-serif;font-size:13px;color:#3d4f5e;direction:ltr;">Lifemakersclub.it@gmail.com</p>' +
+  '</td></tr>' +
+  
+  // شريط سفلي برتقالي
+  '<tr><td height="6" style="height:6px;background:#FBAE42;"></td></tr>' +
+  
+  '</table>' +
+  '<p style="max-width:620px;width:100%;margin:16px auto 0;font-family:\'Tajawal\',Tahoma,sans-serif;font-size:11px;color:#7a8c9b;text-align:center;line-height:1.7;">هذه رسالة تلقائية صادرة من نظام التسجيل — لا ترد على هذا البريد.<br>للتواصل مع الدعم الفني: 01032894453</p>' +
+  '</td></tr></table>';
 }
 
 function sanitizeString(str) {

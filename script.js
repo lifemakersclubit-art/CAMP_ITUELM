@@ -14,7 +14,6 @@
   let verifiedNationalId = '';
   let metadata = null;
   let isSubmitting = false;
-  const STORAGE_KEY = 'camp_daroos_form_data';
 
   // ============================================
   // عناصر DOM
@@ -47,7 +46,6 @@
     }, 1500);
 
     bindEvents();
-    loadSavedData();
   }
 
   function bindEvents() {
@@ -75,9 +73,6 @@
     $$('input[name="pledge"]').forEach(c => {
       c.addEventListener('change', toggleSubmitBtn);
     });
-
-    // حفظ تلقائي
-    registrationForm.addEventListener('input', debounce(saveData, 1000));
   }
 
   // ============================================
@@ -108,22 +103,20 @@
         verifiedNationalId = nationalId;
         showVerifyResult('found', 'تم التحقق بنجاح! جاري فتح الاستمارة...');
 
-        // تحميل البيانات الوصفية
-        await loadMetadata();
+          // تحميل البيانات الوصفية
+          await loadMetadata();
 
-        setTimeout(() => {
-          verifySection.classList.add('d-none');
-          formSection.classList.remove('d-none');
+          setTimeout(() => {
+            verifySection.classList.add('d-none');
+            formSection.classList.remove('d-none');
 
-          // ملء الرقم القومي في الاستمارة
-          const formNationalId = $('input[name="nationalId"]');
-          if (formNationalId) formNationalId.value = verifiedNationalId;
+            // ملء الرقم القومي في الاستمارة
+            const formNationalId = $('input[name="nationalId"]');
+            if (formNationalId) formNationalId.value = verifiedNationalId;
 
-          // تحميل البيانات المحفوظة
-          loadSavedData();
-          renderDynamicFields();
-          updateProgress();
-        }, 800);
+            renderDynamicFields();
+            updateProgress();
+          }, 800);
 
       } else if (response.status === 'not_found') {
         showVerifyResult('not_found',
@@ -378,14 +371,12 @@
 
     currentStep++;
     showCurrentStep();
-    saveData();
   }
 
   function goToPrevStep() {
     if (currentStep <= 1) return;
     currentStep--;
     showCurrentStep();
-    saveData();
   }
 
   function showCurrentStep() {
@@ -503,10 +494,7 @@
       const response = await apiCall('submitRegistration', data);
 
       if (response.status === 'success') {
-        // حذف البيانات المحفوظة
-        localStorage.removeItem(STORAGE_KEY);
-
-        // إرسال البريد الترحيبي في الخلفية (لا يمنع ظهور شاشة النجاح)
+        // عرض شاشة النجاح
         apiCall('sendWelcomeEmail', data).catch(function (e) {
           console.error('خطأ في إرسال البريد الترحيبي:', e);
         });
@@ -713,96 +701,6 @@
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#039;');
-  }
-
-  function debounce(fn, delay) {
-    let timer;
-    return function () {
-      clearTimeout(timer);
-      timer = setTimeout(fn, delay);
-    };
-  }
-
-  // ============================================
-  // التخزين المحلي
-  // ============================================
-  function saveData() {
-    try {
-      const data = collectFormData();
-      data._step = currentStep;
-      data._nationalId = verifiedNationalId;
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    } catch (e) {
-      // تجاهل أخطاء التخزين
-    }
-  }
-
-  function loadSavedData() {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (!saved) return;
-
-      const data = JSON.parse(saved);
-
-      if (data._nationalId) {
-        verifiedNationalId = data._nationalId;
-        const formNationalId = $('input[name="nationalId"]');
-        if (formNationalId) formNationalId.value = verifiedNationalId;
-      }
-
-      // ملء الحقول
-      Object.keys(data).forEach(function (key) {
-        if (key.startsWith('_')) return;
-
-        const val = data[key];
-
-        if (key === 'selfAssessment' && typeof val === 'object') {
-          Object.keys(val).forEach(function (k) {
-            const radio = registrationForm.querySelector('input[name="sa_' + k + '"][value="' + val[k] + '"]');
-            if (radio) radio.checked = true;
-          });
-          return;
-        }
-
-        if (Array.isArray(val)) {
-          val.forEach(function (v) {
-            const cb = registrationForm.querySelector('input[name="' + key + '"][value="' + v + '"]');
-            if (cb) cb.checked = true;
-          });
-          return;
-        }
-
-        if (typeof val === 'boolean') {
-          const cb = registrationForm.querySelector('input[name="' + key + '"]');
-          if (cb) cb.checked = val;
-          return;
-        }
-
-        const el = registrationForm.querySelector('[name="' + key + '"]');
-        if (el) {
-          if (el.type === 'radio') {
-            const radio = registrationForm.querySelector('input[name="' + key + '"][value="' + val + '"]');
-            if (radio) radio.checked = true;
-          } else {
-            el.value = val;
-          }
-        }
-      });
-
-      // استرجاع الخطوة
-      if (data._step && verifiedNationalId) {
-        currentStep = data._step;
-      }
-
-      // تطبيق الإظهار/الإخفاء
-      toggleMemberFields();
-      toggleTrainingName();
-      toggleAbsentDays();
-      toggleSubmitBtn();
-      showCurrentStep();
-    } catch (e) {
-      console.error('خطأ في استرجاع البيانات:', e);
-    }
   }
 
   // ============================================

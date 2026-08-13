@@ -224,6 +224,12 @@ body {
   object-fit: contain;
 }
 
+.brand-logo-lg {
+  width: 92px;
+  height: 92px;
+  object-fit: contain;
+}
+
 .photo-logo {
   width: 72px;
   height: 72px;
@@ -1211,6 +1217,7 @@ body {
   .brand-logos { gap: 10px; margin-bottom: 16px; }
   .brand-logo { width: 54px; height: 54px; }
   .brand-logo-wide { width: 54px; height: 54px; }
+  .brand-logo-lg { width: 68px; height: 68px; }
   .photo-logo { width: 54px; height: 54px; margin-bottom: 18px; }
 
   .checkbox-grid {

@@ -16,6 +16,7 @@ var APPLICANTS_SHEET_ID = '1QhtcTQZ0jj6pYrrdsN0tghfN7mpebXUxy5t_qEDO8Io';
 var APPLICANTS_TAB_NAME = 'FULL DATA';
 var APPLICANTS_ID_COLUMNS = [11, 12]; // العمود K و L
 var REG_TAB_NAME = 'REG'; // تاب إضافي، البيانات في العمود الأول (A)
+var JADB_TAB_NAME = 'جذب'; // تاب إضافي، الأرقام القومية في العمود الأول (A)
 
 // ═══════════════════════════════════════════
 // البيانات الافتراضية للجان والمهارات
@@ -28,7 +29,8 @@ var DEFAULT_COMMITTEES = [
   'ميديا',
   'تنمية وتدريب',
   'تواصل ودعم',
-  'جذب واستقبال'
+  'جذب واستقبال',
+  'فريق مركزي'
 ];
 
 var DEFAULT_COMMITTEE_SKILLS = {
@@ -38,7 +40,8 @@ var DEFAULT_COMMITTEE_SKILLS = {
   'ميديا': ['التصوير الفوتوغرافي', 'المونتاج', 'التصميم الجرافيكي', 'إدارة صفحات التواصل', 'البث المباشر'],
   'تنمية وتدريب': ['تصميم البرامج التدريبية', 'المحاضرة الفعالة', 'التدريب عن بُعد', 'تقييم الأداء', 'التخطيط الاستراتيجي'],
   'تواصل ودعم': ['خدمة المتقدمين', 'الرد على الاستفسارات', 'متابعة الحالات', 'إدارة قاعدة البيانات', 'التواصل الفعال'],
-  'جذب واستقبال': ['استقطاب الأعضاء الجدد', 'تنظيم التسجيل', 'مقابلات القبول', 'الترويج للبرنامج', 'إدارة الفعاليات الترويجية']
+  'جذب واستقبال': ['استقطاب الأعضاء الجدد', 'تنظيم التسجيل', 'مقابلات القبول', 'الترويج للبرنامج', 'إدارة الفعاليات الترويجية'],
+  'فريق مركزي': ['التنسيق العام', 'إدارة الأزمات', 'المتابعة والرقابة', 'التواصل بين اللجان', 'التقارير الدورية']
 };
 
 var DEFAULT_TRAINING_NEEDS = {
@@ -208,25 +211,33 @@ function handleCheckNationalID(data) {
     };
   }
   
-  // مش موجود في الاتنين → ياخد الجذب
+  // سجّل في جذب (موجود في تبويب جذب) → يدخل الاستمارة عادي
+  if (result && result.found && result.source === 'jadb') {
+    return { status: 'found', message: 'تم التحقق بنجاح' };
+  }
+  
+  // مش موجود في أي حتة → ياخد الجذب
   return { status: 'not_found', message: 'لم يتم العثور على بياناتك ضمن المتقدمين للرابطة.' };
 }
 
 function handleGetMetadata() {
-  var committees = getCommittees();
-  var committeeSkills = getCommitteeSkills();
-  var trainingNeeds = getTrainingNeeds();
-  var settings = getSettings();
+  var cache = CacheService.getScriptCache();
+  var cached = cache.get('metadata_v1');
+  if (cached) {
+    return { status: 'success', data: JSON.parse(cached) };
+  }
   
-  return {
-    status: 'success',
-    data: {
-      committees: committees,
-      committeeSkills: committeeSkills,
-      trainingNeeds: trainingNeeds,
-      settings: settings
-    }
+  var data = {
+    committees: getCommittees(),
+    committeeSkills: getCommitteeSkills(),
+    trainingNeeds: getTrainingNeeds(),
+    settings: getSettings()
   };
+  
+  // تخزين مؤقت 5 دقائق لتقليل قراءة الشيت مع زيادة المستخدمين
+  cache.put('metadata_v1', JSON.stringify(data), 300);
+  
+  return { status: 'success', data: data };
 }
 
 function handleSubmitRegistration(data) {
@@ -244,8 +255,10 @@ function handleSubmitRegistration(data) {
     return { status: 'error', message: 'الرقم القومي غير مسجل في قائمة المتقدمين.' };
   }
 
-  // هينت في الشيت: جديد / من REG / قديم
-  data.applicantType = (applicantCheck.source === 'reg') ? 'من REG' : 'قديم';
+  // هينت في الشيت: قديم / من REG / جديد (سجّل جذب)
+  data.applicantType = applicantCheck.source === 'full' ? 'قديم'
+    : applicantCheck.source === 'reg' ? 'من REG'
+    : 'جديد';
   
   var validation = validateRegistration(data);
   if (!validation.valid) {
@@ -453,6 +466,12 @@ function findNationalID(nationalId) {
   if (regResult && regResult.found) {
     regResult.source = 'reg';
     return regResult;
+  }
+
+  var jadbResult = findInTab(JADB_TAB_NAME, [1], nationalId);
+  if (jadbResult && jadbResult.found) {
+    jadbResult.source = 'jadb';
+    return jadbResult;
   }
 
   return { found: false };

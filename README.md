@@ -59,19 +59,20 @@
 
 `Timestamp | National ID | Full Name | Phone | WhatsApp | Email | Governorate | University | Faculty | Study Year | Is Current Member | Committee | Current Position | Join Year | Attended Training | Training Program Name | Will Attend All Days | Absent Days | Agree 80% | Why Join | Desired Skill | Biggest Challenge | Expectations | Leadership | Team Management | Communication | Planning | Teamwork | Time Management | Problem Solving | Event Management | Follow-up | Committee Skills | Want Leadership Position | Training Needs | Committee Specific Needs | Other Needs | Has Laptop | Has Smartphone | Has Gmail | Google Drive | Google Sheets | Google Forms | Canva | Internet Quality | Track 1 | Track 2 | What Can You Offer | Pledge | Applicant Type | Status`
 
-- **Applicant Type** — هينت في الشيت يوضح نوع المتقدم: `قديم` (موجود في FULL DATA) أو `من REG` (موجود في REG فقط)
+- **Applicant Type** — هينت في الشيت يوضح نوع المتقدم: `قديم` (موجود في FULL DATA) أو `من REG` (موجود في REG فقط) أو `جديد` (سجّل من خلال الجذب)
 
 ---
 
 ### شيت المتقدمين (1QhtcTQZ0jj6pYrrdsN0tghfN7mpebXUxy5t_qEDO8Io)
 
-البحث يتم في تبويبين بالترتيب:
+البحث يتم في 3 تبويبات بالترتيب:
 
 1. **تبويب `FULL DATA`** (الضبط) — البحث في العمودين **K و L** (11 و 12)
 2. **تبويب `REG`** — بيانات إضافية، البحث في **العمود A** (الأول)
+3. **تبويب `جذب`** — من سجّل استمارة الجذب، البحث في **العمود A** (الأول)
 
 ```
-تبويب REG
+تبويب REG / جذب
 | A           |
 |-------------|
 | الرقم القومي |
@@ -82,11 +83,12 @@
 
 | الحالة | الشرط | النتيجة |
 |---|---|---|
-| موجود في FULL DATA | لقاه في الضبط | **يدخل استمارة الكامب** مباشرة |
-| موجود في REG فقط | مش في الضبط بس في REG | ياخد **استمارة الضبط** (jIIg4IEe) |
-| مش موجود في الاتنين | مش في أي تبويب | سؤال "هل أنت متطوع؟" → **نعم**: استمارة الضبط (jIIg4IEe) / **لا**: الجذب (lnXsKATT) |
+| موجود في FULL DATA | لقاه في الضبط | **يدخل استمارة الكامب** مباشرة (الحالة: `قديم`) |
+| موجود في REG فقط | مش في الضبط بس في REG | ياخد **استمارة الضبط** (jIIg4IEe) (الحالة: `من REG`) |
+| سجّل في جذب | مش في الاتنين بس في تبويب جذب | **يدخل استمارة الكامب** عادي (الحالة: `جديد`) |
+| مش موجود في أي تبويب | مش في أي حتة | سؤال "هل أنت متطوع؟" → **نعم**: استمارة الضبط (jIIg4IEe) / **لا**: الجذب (lnXsKATT) |
 
-عند التسجيل، يتحط في شيت Camp Registration هينت **Applicant Type**: `قديم` لمن في FULL DATA أو `من REG` لمن في REG.
+عند التسجيل، يتحط في شيت Camp Registration هينت **Applicant Type**: `قديم` لمن في FULL DATA، أو `من REG` لمن في REG، أو `جديد` لمن سجّل من خلال الجذب.
 
 ---
 
@@ -146,9 +148,10 @@ const API_URL = "https://script.google.com/macros/s/AQX.../exec";
 1. افتح صفحة التسجيل
 2. أدخل رقم قومي موجود في تبويب **FULL DATA** → تأكد من دخول استمارة الكامب
 3. أدخل رقم قومي موجود في تبويب **REG فقط** → تأكد من ظهور استمارة الضبط (jIIg4IEe)
-4. أدخل رقم قومي غير موجود → سؤال "هل أنت متطوع بالفعل؟"
-5. اضغط "نعم" → يظهر رابط استمارة الضبط (jIIg4IEe)
-6. اضغط "لا" → يظهر رابط الجذب (lnXsKATT)
+4. أدخل رقم قومي موجود في تبويب **جذب** → تأكد من دخول استمارة الكامب
+5. أدخل رقم قومي غير موجود → سؤال "هل أنت متطوع بالفعل؟"
+6. اضغط "نعم" → يظهر رابط استمارة الضبط (jIIg4IEe)
+7. اضغط "لا" → يظهر رابط الجذب (lnXsKATT)
 
 ### اختبار التسجيل
 1. املأ جميع الحقول في الخطوات الـ 7

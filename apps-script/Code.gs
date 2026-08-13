@@ -158,6 +158,9 @@ function doPost(e) {
       case 'submitRegistration':
         result = handleSubmitRegistration(requestData);
         break;
+      case 'sendWelcomeEmail':
+        result = handleSendWelcomeEmail(requestData);
+        break;
       default:
         result = { status: 'error', message: 'نوع الطلب غير معروف: ' + action };
         break;
@@ -243,18 +246,25 @@ function handleSubmitRegistration(data) {
   try {
     var result = saveRegistration(data);
     
-    try {
-      sendWelcomeEmail(data);
-    } catch (emailError) {
-      Logger.log('تنبيه: فشل إرسال البريد الترحيبي: ' + emailError.toString());
-    }
-    
     return { status: 'success', message: 'تم التسجيل بنجاح! سيتم التواصل معك قريباً.', row: result.row };
   } catch (e) {
     Logger.log('خطأ في حفظ التسجيل: ' + e.toString());
     return { status: 'error', message: 'حدث خطأ أثناء حفظ البيانات. يرجى المحاولة مرة أخرى.' };
   } finally {
     releaseLock(lock);
+  }
+}
+
+function handleSendWelcomeEmail(data) {
+  try {
+    var result = sendWelcomeEmail(data);
+    if (result) {
+      return { status: 'success', message: 'تم إرسال البريد الترحيبي' };
+    }
+    return { status: 'error', message: 'فشل إرسال البريد' };
+  } catch (e) {
+    Logger.log('خطأ في إرسال البريد: ' + e.toString());
+    return { status: 'error', message: 'فشل إرسال البريد' };
   }
 }
 
@@ -772,11 +782,11 @@ function sendWelcomeEmail(data) {
   body += 'فريق برنامج مدار | كامب جذور\n';
   body += 'رابطة أسر صناع الحياة بالجامعات المصرية\n';
   body += '———————————————————\n';
-  body += 'للتواصل معنا: rwaq@lifemakers.org';
+  body += 'للتواصل معنا: Lifemakersclub.it@gmail.com';
   
   try {
     GmailApp.sendEmail(data.email, subject, body, {
-      name: 'كاب جذور - رابطة أسر صناع الحياة بالجامعات المصرية'
+      name: 'كامب جذور - رابطة أسر صناع الحياة بالجامعات المصرية'
     });
     Logger.log('تم إرسال البريد الترحيبي إلى: ' + data.email);
     return true;

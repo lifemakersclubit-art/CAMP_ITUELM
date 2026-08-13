@@ -506,6 +506,11 @@
         // حذف البيانات المحفوظة
         localStorage.removeItem(STORAGE_KEY);
 
+        // إرسال البريد الترحيبي في الخلفية (لا يمنع ظهور شاشة النجاح)
+        apiCall('sendWelcomeEmail', data).catch(function (e) {
+          console.error('خطأ في إرسال البريد الترحيبي:', e);
+        });
+
         // عرض شاشة النجاح
         formSection.classList.add('d-none');
         successSection.classList.remove('d-none');

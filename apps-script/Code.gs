@@ -15,6 +15,7 @@ var MAIN_SHEET_ID = '1V-U6PRLJ5mYH5KC2wm0A7HaEIiAvqtFl8ddTKkVTFWA';
 var APPLICANTS_SHEET_ID = '1QhtcTQZ0jj6pYrrdsN0tghfN7mpebXUxy5t_qEDO8Io';
 var APPLICANTS_TAB_NAME = 'FULL DATA';
 var APPLICANTS_ID_COLUMNS = [11, 12]; // العمود K و L
+var REG_TAB_NAME = 'REG'; // تاب إضافي، البيانات في العمود الأول (A)
 
 // ═══════════════════════════════════════════
 // البيانات الافتراضية للجان والمهارات
@@ -198,7 +199,7 @@ function handleCheckNationalID(data) {
     return { status: 'not_found', message: 'لم يتم العثور على بياناتك ضمن المتقدمين للرابطة.' };
   }
   
-  return { status: 'found', message: 'تم التحقق بنجاح', applicantData: result.data };
+  return { status: 'found', message: 'تم التحقق بنجاح' };
 }
 
 function handleGetMetadata() {
@@ -228,10 +229,6 @@ function handleSubmitRegistration(data) {
   
   nationalId = idValidation.value;
   
-  if (isDuplicate(nationalId)) {
-    return { status: 'duplicate', message: 'لقد قمت بالتسجيل بالفعل. لا يمكن التسجيل مرة أخرى.' };
-  }
-  
   var applicantCheck = findNationalID(nationalId);
   if (!applicantCheck || !applicantCheck.found) {
     return { status: 'error', message: 'الرقم القومي غير مسجل في قائمة المتقدمين.' };
@@ -244,6 +241,9 @@ function handleSubmitRegistration(data) {
   
   var lock = acquireLock();
   try {
+    if (isDuplicate(nationalId)) {
+      return { status: 'duplicate', message: 'لقد قمت بالتسجيل بالفعل. لا يمكن التسجيل مرة أخرى.' };
+    }
     var result = saveRegistration(data);
     
     return { status: 'success', message: 'تم التسجيل بنجاح! سيتم التواصل معك قريباً.', row: result.row };
@@ -256,6 +256,18 @@ function handleSubmitRegistration(data) {
 }
 
 function handleSendWelcomeEmail(data) {
+  var nationalId = sanitizeString(data.nationalId);
+  var idCheck = validateNationalID(nationalId);
+  if (!idCheck.valid) {
+    return { status: 'error', message: 'رقم قومي غير صالح' };
+  }
+  nationalId = idCheck.value;
+  
+  // لا نرسل البريد إلا لمن سجّل فعلاً — يمنع إساءة استخدام الـ endpoint
+  if (!isDuplicate(nationalId)) {
+    return { status: 'error', message: 'غير مصرح بإرسال البريد' };
+  }
+  
   try {
     var result = sendWelcomeEmail(data);
     if (result) {
@@ -341,7 +353,11 @@ function validateRegistration(data) {
   var errors = [];
   
   var nameCheck = validateRequired(data.fullName, 'الاسم الكامل');
-  if (!nameCheck.valid) errors.push(nameCheck.message);
+  if (!nameCheck.valid) {
+    errors.push(nameCheck.message);
+  } else if (String(data.fullName).trim().split(/\s+/).length < 4) {
+    errors.push('الاسم الكامل يجب أن يكون 4 كلمات على الأقل');
+  }
   
   var phoneCheck = validatePhone(data.phone);
   if (!phoneCheck.valid) errors.push(phoneCheck.message);
@@ -414,67 +430,50 @@ function getApplicantsSpreadsheet() {
 }
 
 function findNationalID(nationalId) {
+  var searchOrder = [
+    { tab: APPLICANTS_TAB_NAME, columns: APPLICANTS_ID_COLUMNS },
+    { tab: REG_TAB_NAME, columns: [1] }
+  ];
+
+  for (var s = 0; s < searchOrder.length; s++) {
+    var result = findInTab(searchOrder[s].tab, searchOrder[s].columns, nationalId);
+    if (result && result.found) {
+      return result;
+    }
+  }
+
+  return { found: false };
+}
+
+function findInTab(tabName, columns, nationalId) {
   try {
     var ss = getApplicantsSpreadsheet();
-    var sheet = ss.getSheetByName(APPLICANTS_TAB_NAME);
-    
+    var sheet = ss.getSheetByName(tabName);
+
     if (!sheet) {
-      Logger.log('لم يتم العثور على التبويب: ' + APPLICANTS_TAB_NAME);
+      Logger.log('لم يتم العثور على التبويب: ' + tabName);
       return null;
     }
-    
+
     var lastRow = sheet.getLastRow();
     if (lastRow < 2) return null;
-    
-    // البحث في العمود K أولاً
-    var rangeK = sheet.getRange(2, APPLICANTS_ID_COLUMNS[0], lastRow - 1, 1);
-    var valuesK = rangeK.getValues();
-    
-    for (var i = 0; i < valuesK.length; i++) {
-      var cellVal = String(valuesK[i][0]).trim();
-      if (cellVal === nationalId) {
-        var row = i + 2;
-        var rowData = sheet.getRange(row, 1, 1, sheet.getLastColumn()).getValues()[0];
-        return {
-          found: true,
-          row: row,
-          data: {
-            nationalId: nationalId,
-            name: rowData[0] || '',
-            phone: rowData[1] || '',
-            university: rowData[2] || '',
-            status: rowData[3] || ''
-          }
-        };
+
+    for (var c = 0; c < columns.length; c++) {
+      var col = columns[c];
+      var range = sheet.getRange(2, col, lastRow - 1, 1);
+      var values = range.getValues();
+
+      for (var i = 0; i < values.length; i++) {
+        var cellVal = String(values[i][0]).trim();
+        if (cellVal === nationalId) {
+          return { found: true, row: i + 2 };
+        }
       }
     }
-    
-    // البحث في العمود L إذا لم يُوجد في K
-    var rangeL = sheet.getRange(2, APPLICANTS_ID_COLUMNS[1], lastRow - 1, 1);
-    var valuesL = rangeL.getValues();
-    
-    for (var i = 0; i < valuesL.length; i++) {
-      var cellVal = String(valuesL[i][0]).trim();
-      if (cellVal === nationalId) {
-        var row = i + 2;
-        var rowData = sheet.getRange(row, 1, 1, sheet.getLastColumn()).getValues()[0];
-        return {
-          found: true,
-          row: row,
-          data: {
-            nationalId: nationalId,
-            name: rowData[0] || '',
-            phone: rowData[1] || '',
-            university: rowData[2] || '',
-            status: rowData[3] || ''
-          }
-        };
-      }
-    }
-    
+
     return { found: false };
   } catch (e) {
-    Logger.log('خطأ في البحث عن الرقم القومي: ' + e.toString());
+    Logger.log('خطأ في البحث عن الرقم القومي في تاب ' + tabName + ': ' + e.toString());
     return { found: false, error: e.toString() };
   }
 }
@@ -567,9 +566,14 @@ function saveRegistration(data) {
     'مكتمل'
   ];
   
+  // منع Formula Injection: تحويل أي نص يبدأ برمز صيغة إلى نص عادي
+  row = row.map(function (v) {
+    return typeof v === 'string' ? sanitizeCell(v) : v;
+  });
+  
   sheet.appendRow(row);
   
-  Logger.log('تم حفظ التسجيل للرقم القومي: ' + data.nationalId);
+  Logger.log('تم حفظ التسجيل في الصف: ' + sheet.getLastRow());
   return { success: true, row: sheet.getLastRow() };
 }
 
@@ -788,7 +792,7 @@ function sendWelcomeEmail(data) {
     GmailApp.sendEmail(data.email, subject, body, {
       name: 'كامب جذور - رابطة أسر صناع الحياة بالجامعات المصرية'
     });
-    Logger.log('تم إرسال البريد الترحيبي إلى: ' + data.email);
+    Logger.log('تم إرسال البريد الترحيبي');
     return true;
   } catch (e) {
     Logger.log('خطأ في إرسال البريد: ' + e.toString());
@@ -799,6 +803,15 @@ function sendWelcomeEmail(data) {
 function sanitizeString(str) {
   if (!str) return '';
   return String(str).trim().replace(/\s+/g, ' ');
+}
+
+function sanitizeCell(value) {
+  var s = String(value);
+  var trimmed = s.trim();
+  if (trimmed.length > 0 && /^[=+\-@\t\r]/.test(trimmed)) {
+    return "'" + s;
+  }
+  return value;
 }
 
 function logEvent(action, details) {

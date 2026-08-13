@@ -11,11 +11,7 @@
 ├── config.js               # الإعدادات (API URL)
 ├── README.md               # التوثيق
 └── apps-script/            # كود Google Apps Script
-    ├── Code.gs             # نقطة الدخول الرئيسية
-    ├── Api.gs              # معالجات API
-    ├── Validation.gs       # التحقق من البيانات
-    ├── SheetService.gs     # التعامل مع Google Sheets
-    ├── Utils.gs            # الدوال المساعدة
+    ├── Code.gs             # الملف المدمج بالكامل (انسخه فقط)
     └── appsscript.json     # ملف الإعدادات
 ```
 
@@ -61,19 +57,26 @@
 #### تبويب Camp Registration
 سيتم إنشاؤها تلقائياً عند أول تسجيل، أو أنشئها يدوياً بالهيدر التالي:
 
-`Timestamp | National ID | Full Name | Phone | WhatsApp | Email | Governorate | University | Faculty | Study Year | Life Makers University | Is Current Member | Family | Committee | Current Position | Join Year | Attended Training | Training Program Name | Will Attend All Days | Absent Days | Agree 80% | Why Join | Desired Skill | Biggest Challenge | Expectations | Leadership | Team Management | Communication | Planning | Teamwork | Time Management | Problem Solving | Event Management | Follow-up | Committee Skills | Want Leadership Position | Training Needs | Committee Specific Needs | Other Needs | Has Laptop | Has Smartphone | Has Gmail | Google Drive | Google Sheets | Google Forms | Canva | Internet Quality | Track 1 | Track 2 | What Can You Offer | Pledge | Status`
+`Timestamp | National ID | Full Name | Phone | WhatsApp | Email | Governorate | University | Faculty | Study Year | Is Current Member | Committee | Current Position | Join Year | Attended Training | Training Program Name | Will Attend All Days | Absent Days | Agree 80% | Why Join | Desired Skill | Biggest Challenge | Expectations | Leadership | Team Management | Communication | Planning | Teamwork | Time Management | Problem Solving | Event Management | Follow-up | Committee Skills | Want Leadership Position | Training Needs | Committee Specific Needs | Other Needs | Has Laptop | Has Smartphone | Has Gmail | Google Drive | Google Sheets | Google Forms | Canva | Internet Quality | Track 1 | Track 2 | What Can You Offer | Pledge | Status`
 
 ---
 
 ### شيت المتقدمين (1QhtcTQZ0jj6pYrrdsN0tghfN7mpebXUxy5t_qEDO8Io)
 
-| K |
-|---|
-| رقم الهوية الوطنية |
-| 14 رقم |
-| 14 رقم |
+البحث يتم في تبويبين:
 
-**ملاحظة:** العمود K هو العمود 11 (يبدأ العد من 1). تأكد من ضبط `APPLICANTS_ID_COLUMN = 11` في ملف `Utils.gs` إذا كان العمود مختلفاً.
+1. **تبويب `FULL DATA`** — البحث في العمودين **K و L** (11 و 12)
+2. **تبويب `REG`** — بيانات إضافية، البحث في **العمود A** (الأول)
+
+```
+تبويب REG
+| A           |
+|-------------|
+| الرقم القومي |
+| 14 رقم      |
+```
+
+لو الرقم موجود في أي تبويب من دول → يدخل استمارة الكامب.
 
 ---
 
@@ -82,18 +85,13 @@
 1. اذهب إلى [script.google.com](https://script.google.com)
 2. اضغط "مشروع جديد" (New Project)
 3. احذف المحتوى الافتراضي من `Code.gs`
-4. أنشئ الملفات التالية من قائمة الملفات (File > New > Script):
-   - `Code.gs` - انسخ محتوى `apps-script/Code.gs`
-   - `Api.gs` - انسخ محتوى `apps-script/Api.gs`
-   - `Validation.gs` - انسخ محتوى `apps-script/Validation.gs`
-   - `SheetService.gs` - انسخ محتوى `apps-script/SheetService.gs`
-   - `Utils.gs` - انسخ محتوى `apps-script/Utils.gs`
+4. **انسخ محتوى `apps-script/Code.gs`** بالكامل (الملف مدمج، ملف واحد فقط)
 5. استبدل محتوى `appsscript.json` من ملف `apps-script/appsscript.json`
 
 ### نشر كـ Web App
 1. اضغط "نشر" > "نشر كتطبيق ويب" (Deploy > New Deployment)
 2. اختر النوع: "تطبيق ويب" (Web app)
-3. Execute as: "Me" (أنا)
+3. Execute as: **"Me" (أنا)** — مهم جداً حتى يعمل البريد والوصول للشيتات
 4. Who has access: "Anyone" (أي شخص)
 5. اضغط "Deploy"
 6. **انسخ رابط النشر** (يبدو مثل: `https://script.google.com/macros/s/xxxx/exec`)
@@ -139,7 +137,9 @@ const API_URL = "https://script.google.com/macros/s/AQX.../exec";
 2. أدخل رقم قومي موجود في شيت المتقدمين
 3. تأكد من ظهور رسالة "تم التحقق بنجاح"
 4. أدخل رقم قومي غير موجود
-5. تأكد من ظهور رسالة "لم يتم العثور على بياناتك" مع زر "اذهب للتسجيل"
+5. تأكد من ظهور رسالة "لم يتم العثور على بياناتك" مع سؤال "هل أنت متطوع بالفعل؟"
+6. اضغط "نعم" → يظهر رابط استمارة العضوية
+7. اضغط "لا" → يظهر رابط استمارة البيانات العامة
 
 ### اختبار التسجيل
 1. املأ جميع الحقول في الخطوات الـ 7
@@ -149,10 +149,7 @@ const API_URL = "https://script.google.com/macros/s/AQX.../exec";
 5. تأكد من استلام بريد ترحيبي
 
 ### اختبار التخزين المحلي
-1. املأ بعض الحقول
-2. أغلق الصفحة
-3. افتحها مرة أخرى
-4. تأكد من استرجاع البيانات
+أُزيلت ميزة التخزين المحلي — بيانات التسجيل تُرسل مباشرة بدون حفظ محلي.
 
 ### اختبار التكرار
 1. حاول التسجيل بنفس الرقم القومي مرة أخرى
@@ -193,7 +190,8 @@ const API_URL = "https://script.google.com/macros/s/AQX.../exec";
 ## ملاحظات تقنية
 
 - **الأمان:** يُستخدم `LockService` لمنع تضارب الكتابة عند التسجيل المتزامن
-- **منع التكرار:** يتم التحقق من الرقم القومي قبل الحفظ
-- **البريد الإلكتروني:** يتم إرسال بريد ترحيبي تلقائياً بعد التسجيل بنجاح
-- **التخزين المحلي:** يتم حفظ بيانات النموذج تلقائياً واسترجاعها عند إغلاق الصفحة
+- **منع التكرار:** يتم فحص التكرار داخل القفل، والتحقق من الرقم القومي قبل الحفظ
+- **البريد الإلكتروني:** يتم إرسال بريد ترحيبي تلقائياً بعد التسجيل بنجاح، ولا يُرسل إلا لمن سجّل فعلاً
+- **الأمان ضد الصيغ:** تُحوَّل القيم التي تبدأ بـ `= + - @` إلى نص لمنع Formula Injection
+- **الاسم الكامل:** يجب أن يكون 4 كلمات على الأقل
 - **التوافق:** يعمل على جميع الأجهزة (محمول، تابلت، كمبيوتر)

@@ -119,13 +119,24 @@
           }, 800);
 
       } else if (response.status === 'not_found') {
+        verifiedNationalId = '';
         showVerifyResult('not_found',
           response.message,
-          '<div class="not-found-action">' +
-          '<a href="https://ee-eu.kobotoolbox.org/x/jIIg4IEe" target="_blank" class="btn-register-link">' +
-          'اذهب للتسجيل <span>&larr;</span>' +
-          '</a></div>'
+          '<div class="volunteer-question">' +
+          '<p>هل أنت متطوع بالفعل؟</p>' +
+          '<div class="volunteer-btns">' +
+          '<button type="button" class="btn-volunteer yes" data-answer="old">نعم</button>' +
+          '<button type="button" class="btn-volunteer no" data-answer="new">لا</button>' +
+          '</div>' +
+          '<div id="volunteerLinkBox" class="volunteer-link-box d-none"></div>' +
+          '</div>'
         );
+
+        verifyResult.querySelectorAll('.btn-volunteer').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            showVolunteerLink(this.getAttribute('data-answer'));
+          });
+        });
       } else if (response.status === 'duplicate') {
         showVerifyResult('duplicate', response.message);
       } else {
@@ -148,7 +159,28 @@
     }
 
     verifyResult.classList.add(type);
-    verifyResult.innerHTML = '<p>' + (message || '') + '</p>' + (extra || '');
+    verifyResult.innerHTML = '<p>' + escapeHtml(message || '') + '</p>' + (extra || '');
+  }
+
+  function showVolunteerLink(answer) {
+    const box = $('#volunteerLinkBox');
+    if (!box) return;
+
+    const isNew = answer === 'new';
+
+    const url = isNew
+      ? 'https://ee-eu.kobotoolbox.org/lnXsKATT'
+      : 'https://ee-eu.kobotoolbox.org/x/jIIg4IEe';
+    const title = isNew
+      ? 'سجل بياناتك في هذه الاستمارة من الرابط التالي:'
+      : 'سجل بياناتك في استمارة العضوية من الرابط التالي:';
+
+    box.classList.remove('d-none');
+    box.innerHTML =
+      '<p>' + title + '</p>' +
+      '<a href="' + url + '" target="_blank" rel="noopener noreferrer" class="btn-register-link">' +
+      'اذهب للتسجيل <span>&larr;</span></a>' +
+      '<p class="volunteer-note">ملاحظة: بعد التسجيل في هذه الاستمارة، ارجع لصفحة كامب جذور وسجل من جديد بشكل طبيعي.</p>';
   }
 
   // ============================================
@@ -430,6 +462,13 @@
 
     // تحقق خاص بالخطوة
     if (currentStep === 1) {
+      const name = step.querySelector('input[name="fullName"]');
+      if (name && name.value.trim().split(/\s+/).length < 4) {
+        showToast('الاسم الكامل يجب أن يكون 4 كلمات على الأقل', 'error');
+        name.focus();
+        return false;
+      }
+
       const phone = step.querySelector('input[name="phone"]');
       if (phone && !/^01\d{9}$/.test(phone.value.trim())) {
         showToast('رقم الهاتف يجب أن يبدأ بـ 01 ويكون 11 رقم', 'error');
@@ -632,8 +671,8 @@
   // التحقق الشامل
   // ============================================
   function validateFullData(data) {
-    if (!data.fullName || data.fullName.trim() === '') {
-      showToast('الاسم الكامل مطلوب', 'error');
+    if (!data.fullName || data.fullName.trim().split(/\s+/).length < 4) {
+      showToast('الاسم الكامل يجب أن يكون 4 كلمات على الأقل', 'error');
       goToStep(1);
       return false;
     }

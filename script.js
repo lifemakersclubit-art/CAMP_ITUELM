@@ -210,6 +210,11 @@
       }
     } catch (err) {
       console.error('خطأ في تحميل البيانات الوصفية:', err);
+      metadata = {
+        committees: ['IT', 'HR', 'PR', 'ميديا', 'تنمية وتدريب', 'تواصل ودعم', 'جذب واستقبال', 'فريق مركزي', 'ملف التفعيل', 'ملف التوسع', 'منسقي القطاعات', 'مسؤولي الجامعات'],
+        committeeSkills: {},
+        trainingNeeds: {}
+      };
     }
   }
 
@@ -465,13 +470,34 @@
     const step = $('.form-step[data-step="' + currentStep + '"]');
     if (!step) return true;
 
-    // حقول مطلوبة
+    // حقول مطلوبة — نتجاهل الحقول داخل حاويات مخفية (مثل عضو حالي = لا)
     const required = step.querySelectorAll('[required]');
     for (let i = 0; i < required.length; i++) {
       const field = required[i];
+      if (field.closest('.d-none')) continue;
       if (!field.value || field.value.trim() === '') {
         showToast('يرجى ملء جميع الحقول المطلوبة', 'warning');
         field.focus();
+        return false;
+      }
+    }
+
+    // مجموعات الراديو المطلوبة (اللي ليها علامة *) — نأكد أنه اتنختار واحدة
+    const radioGroups = step.querySelectorAll('.form-floating-custom');
+    for (let i = 0; i < radioGroups.length; i++) {
+      const g = radioGroups[i];
+      if (g.closest('.d-none')) continue;
+      const reqLabel = g.querySelector('.req');
+      const radios = g.querySelectorAll('input[type="radio"]');
+      if (!reqLabel || radios.length === 0) continue;
+      let checked = false;
+      for (let j = 0; j < radios.length; j++) {
+        if (radios[j].checked) { checked = true; break; }
+      }
+      if (!checked) {
+        const lbl = g.querySelector('label');
+        showToast('يرجى الإجابة على: ' + (lbl ? lbl.textContent.replace('*', '').trim() : 'الحقل المطلوب'), 'warning');
+        radios[0].focus();
         return false;
       }
     }
@@ -497,6 +523,25 @@
         showToast('البريد الإلكتروني غير صحيح', 'error');
         email.focus();
         return false;
+      }
+    }
+
+    // تحقق خاص بخطوة الحضور: أوافق 80% لازم يكون متشيك، و absentDays لازم لما يختار لا
+    if (currentStep === 3) {
+      const agree = $('input[name="agree80Percent"]');
+      if (agree && !agree.checked) {
+        showToast('يجب الموافقة على الحضور 80% على الأقل', 'warning');
+        agree.focus();
+        return false;
+      }
+      const willAttend = getRadio('willAttendAllDays');
+      if (willAttend === 'لا') {
+        const absent = $('input[name="absentDays"]');
+        if (absent && (!absent.value || absent.value.trim() === '')) {
+          showToast('يرجى تحديد الأيام التي قد تتغيب عنها', 'warning');
+          absent.focus();
+          return false;
+        }
       }
     }
 

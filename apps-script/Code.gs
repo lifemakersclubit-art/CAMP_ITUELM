@@ -274,6 +274,9 @@ function handleSubmitRegistration(data) {
   }
   
   var lock = acquireLock();
+  if (!lock) {
+    return { status: 'error', message: 'النظام مشغول حالياً بسبب كثرة التسجيلات، يرجى المحاولة مرة أخرى بعد لحظات.' };
+  }
   var savedRow;
   try {
     if (isDuplicate(nationalId)) {
@@ -473,6 +476,24 @@ function getApplicantsSpreadsheet() {
 }
 
 function findNationalID(nationalId) {
+  // كاش 90 ثانية لتقليل قراءة الشيت مع تكرار طلبات التحقق (بيخفف أخطاء السيرفر)
+  var cache = CacheService.getScriptCache();
+  var cacheKey = 'nid_' + nationalId;
+  var cached = cache.get(cacheKey);
+  if (cached) {
+    try { return JSON.parse(cached); } catch (e) {}
+  }
+
+  var result = findNationalIDUncached_(nationalId);
+
+  try {
+    cache.put(cacheKey, JSON.stringify(result), 90);
+  } catch (e) {}
+
+  return result;
+}
+
+function findNationalIDUncached_(nationalId) {
   var fullResult = findInTab(APPLICANTS_TAB_NAME, APPLICANTS_ID_COLUMNS, nationalId);
   if (fullResult && fullResult.found) {
     fullResult.source = 'full';
@@ -812,9 +833,9 @@ function createLock() {
 
 function acquireLock() {
   var lock = createLock();
-  var acquired = lock.tryLock(5000);
+  var acquired = lock.tryLock(10000);
   if (!acquired) {
-    throw new Error('الخدمة مشغولة حالياً، يرجى المحاولة مرة أخرى.');
+    return null;
   }
   return lock;
 }

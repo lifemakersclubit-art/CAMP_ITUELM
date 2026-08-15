@@ -249,24 +249,9 @@ function handleGetMetadata() {
 }
 
 function handleSubmitRegistration(data) {
+  // لا يوجد تحقق مسبق للرقم القومي — المتطوع يسجل مباشرة
   var nationalId = sanitizeString(data.nationalId);
-  
-  var idValidation = validateNationalID(nationalId);
-  if (!idValidation.valid) {
-    return { status: 'error', message: idValidation.message };
-  }
-  
-  nationalId = idValidation.value;
-  
-  var applicantCheck = findNationalID(nationalId);
-  if (!applicantCheck || !applicantCheck.found) {
-    return { status: 'error', message: 'الرقم القومي غير مسجل في قائمة المتقدمين.' };
-  }
-
-  // هينت في الشيت: قديم / من REG / جديد (سجّل جذب)
-  data.applicantType = applicantCheck.source === 'full' ? 'قديم'
-    : applicantCheck.source === 'reg' ? 'من REG'
-    : 'جديد';
+  data.applicantType = data.applicantType || 'جديد';
   
   var validation = validateRegistration(data);
   if (!validation.valid) {
@@ -279,7 +264,7 @@ function handleSubmitRegistration(data) {
   }
   var savedRow;
   try {
-    if (isDuplicate(nationalId)) {
+    if (nationalId && isDuplicate(nationalId)) {
       return { status: 'duplicate', message: 'لقد قمت بالتسجيل بالفعل. لا يمكن التسجيل مرة أخرى.' };
     }
     savedRow = saveRegistration(data).row;
@@ -293,7 +278,9 @@ function handleSubmitRegistration(data) {
   // إرسال البريد الترحيبي فوراً بعد تأكيد حفظ البيانات في الشيت
   var emailSent = false;
   try {
-    emailSent = sendWelcomeEmail(data);
+    if (data.email) {
+      emailSent = sendWelcomeEmail(data);
+    }
   } catch (e) {
     Logger.log('خطأ في إرسال البريد الترحيبي: ' + e.toString());
   }
@@ -410,9 +397,6 @@ function validateRegistration(data) {
   
   var waCheck = validateWhatsApp(data.whatsapp);
   if (!waCheck.valid) errors.push(waCheck.message);
-  
-  var idCheck = validateNationalID(data.nationalId);
-  if (!idCheck.valid) errors.push(idCheck.message);
   
   var emailCheck = validateEmail(data.email);
   if (!emailCheck.valid) errors.push(emailCheck.message);

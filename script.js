@@ -12,6 +12,7 @@
   let currentStep = 1;
   const totalSteps = 7;
   let verifiedNationalId = '';
+  let volunteerType = '';
   let metadata = null;
   let isSubmitting = false;
 
@@ -25,10 +26,6 @@
   const verifySection = $('#verifySection');
   const formSection = $('#formSection');
   const successSection = $('#successSection');
-  const verifyForm = $('#verifyForm');
-  const nationalIdInput = $('#nationalIdInput');
-  const verifyBtn = $('#verifyBtn');
-  const verifyResult = $('#verifyResult');
   const registrationForm = $('#registrationForm');
   const prevBtn = $('#prevBtn');
   const nextBtn = $('#nextBtn');
@@ -49,12 +46,15 @@
   }
 
   function bindEvents() {
-    verifyForm.addEventListener('submit', handleVerify);
     prevBtn.addEventListener('click', goToPrevStep);
     nextBtn.addEventListener('click', goToNextStep);
     registrationForm.addEventListener('submit', handleSubmit);
-    nationalIdInput.addEventListener('input', function () {
-      this.value = this.value.replace(/\D/g, '');
+
+    // اختيار نوع المتطوع (متطوع جديد / متطوع حالي)
+    $$('#verifySection .btn-volunteer').forEach(btn => {
+      btn.addEventListener('click', function () {
+        handleChoice(this.getAttribute('data-answer'));
+      });
     });
 
     // إظهار/إخفاء الحقول حسب الاختيارات
@@ -76,127 +76,21 @@
   }
 
   // ============================================
-  // التحقق من الرقم القومي
+  // اختيار نوع المتطوع
   // ============================================
-  async function handleVerify(e) {
-    e.preventDefault();
+  function handleChoice(answer) {
+    verifiedNationalId = '';
+    volunteerType = answer === 'new' ? 'جديد' : 'قديم';
 
-    const nationalId = nationalIdInput.value.trim();
+    // افتح الاستمارة مباشرة بدون أي تحقق
+    verifySection.classList.add('d-none');
+    formSection.classList.remove('d-none');
 
-    if (!nationalId) {
-      showVerifyResult('error', 'يرجى إدخال الرقم القومي');
-      return;
-    }
+    renderDynamicFields();
+    updateProgress();
 
-    if (!/^\d+$/.test(nationalId)) {
-      showVerifyResult('error', 'الرقم القومي يجب أن يحتوي على أرقام فقط');
-      return;
-    }
-
-    setLoading(verifyBtn, true);
-    showVerifyResult('');
-
-    try {
-      const response = await apiCall('checkNationalID', { nationalId: nationalId });
-
-      if (response.status === 'found') {
-        verifiedNationalId = nationalId;
-        showVerifyResult('found', 'تم التحقق بنجاح! جاري فتح الاستمارة...');
-
-          // تحميل البيانات الوصفية
-          await loadMetadata();
-
-          setTimeout(() => {
-            verifySection.classList.add('d-none');
-            formSection.classList.remove('d-none');
-
-            // ملء الرقم القومي في الاستمارة
-            const formNationalId = $('input[name="nationalId"]');
-            if (formNationalId) formNationalId.value = verifiedNationalId;
-
-            renderDynamicFields();
-            updateProgress();
-          }, 800);
-
-      } else if (response.status === 'reg_found') {
-        verifiedNationalId = '';
-        showVerifyResult('reg_found',
-          response.message,
-          '<div class="volunteer-link-box">' +
-          '<a href="https://ee-eu.kobotoolbox.org/x/jIIg4IEe" target="_blank" rel="noopener noreferrer" class="btn-register-link">' +
-          'اذهب لاستكمال العضوية <span>&larr;</span></a>' +
-          '</div>'
-        );
-      } else if (response.status === 'not_found') {
-        verifiedNationalId = '';
-        showVerifyResult('not_found',
-          response.message,
-          '<div class="volunteer-question">' +
-          '<p>هل أنت متطوع بالفعل؟</p>' +
-          '<div class="volunteer-btns">' +
-          '<button type="button" class="btn-volunteer yes" data-answer="old">نعم</button>' +
-          '<button type="button" class="btn-volunteer no" data-answer="new">لا</button>' +
-          '</div>' +
-          '<div id="volunteerLinkBox" class="volunteer-link-box d-none"></div>' +
-          '</div>'
-        );
-
-        verifyResult.querySelectorAll('.btn-volunteer').forEach(function (btn) {
-          btn.addEventListener('click', function () {
-            showVolunteerLink(this.getAttribute('data-answer'));
-          });
-        });
-      } else if (response.status === 'duplicate') {
-        showVerifyResult('duplicate', response.message);
-      } else {
-        showVerifyResult('error', response.message || 'حدث خطأ غير متوقع');
-      }
-    } catch (err) {
-      showVerifyResult('error', 'حدث خطأ في الاتصال بالخادم. يرجى المحاولة مرة أخرى.');
-      console.error(err);
-    } finally {
-      setLoading(verifyBtn, false);
-    }
-  }
-
-  function showVerifyResult(type, message, extra) {
-    verifyResult.classList.remove('d-none', 'found', 'error', 'not-found', 'duplicate', 'reg_found');
-
-    if (!type) {
-      verifyResult.classList.add('d-none');
-      return;
-    }
-
-    verifyResult.classList.add(type);
-    verifyResult.innerHTML = '<p>' + escapeHtml(message || '') + '</p>' + (extra || '');
-  }
-
-  function showVolunteerLink(answer) {
-    const box = $('#volunteerLinkBox');
-    if (!box) return;
-
-    const isNew = answer === 'new';
-    const kind = isNew ? 'new' : 'reg';
-
-    box.classList.remove('d-none');
-    box.innerHTML =
-      buildFormLink(kind) +
-      '<p class="volunteer-note">ملاحظة: بعد التسجيل في هذه الاستمارة، ارجع لصفحة كامب جذور وسجل من جديد بشكل طبيعي.</p>';
-  }
-
-  function buildFormLink(kind) {
-    const isReg = kind === 'reg';
-
-    const url = isReg
-      ? 'https://ee-eu.kobotoolbox.org/x/jIIg4IEe'
-      : 'https://ee-eu.kobotoolbox.org/lnXsKATT';
-    const title = isReg
-      ? 'سجل بياناتك في استمارة الضبط من الرابط التالي:'
-      : 'سجل بياناتك في استمارة الجذب من الرابط التالي:';
-
-    return '<p>' + title + '</p>' +
-      '<a href="' + url + '" target="_blank" rel="noopener noreferrer" class="btn-register-link">' +
-      'اذهب للتسجيل <span>&larr;</span></a>';
+    // حمّل اللجان والمهارات في الخلفية (وتستخدم الافتراضية لو فشل)
+    loadMetadata().then(renderDynamicFields);
   }
 
   // ============================================
@@ -590,7 +484,6 @@
     setLoading(submitBtn, true);
 
     try {
-      data.nationalId = verifiedNationalId;
       const response = await apiCall('submitRegistration', data);
 
       if (response.status === 'success') {
@@ -635,7 +528,7 @@
 
     // البيانات الشخصية
     data.fullName = getVal('fullName');
-    data.nationalId = verifiedNationalId;
+    data.nationalId = getVal('nationalId') || verifiedNationalId;
     data.phone = getVal('phone');
     data.whatsapp = getVal('whatsapp');
     data.email = getVal('email');
@@ -643,6 +536,9 @@
     data.university = getVal('university');
     data.faculty = getVal('faculty');
     data.studyYear = getVal('studyYear');
+
+    // نوع المتطوع (جديد / حالي)
+    data.applicantType = volunteerType || 'جديد';
 
     // العضوية
     data.isCurrentMember = getRadio('isCurrentMember');

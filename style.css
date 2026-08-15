@@ -435,6 +435,26 @@ body {
   justify-content: center;
   flex-wrap: wrap;
 }
+.verify-choice-btns {
+  margin-top: 24px;
+}
+.verify-choice-btns .btn-volunteer {
+  flex: 1;
+  min-width: 170px;
+  max-width: 240px;
+  padding: 20px 24px;
+  font-size: 17px;
+  border-radius: 14px;
+  text-align: center;
+}
+.verify-choice-btns .btn-volunteer.no {
+  background: linear-gradient(135deg, var(--orange), #FBAE42);
+  color: var(--white);
+  border: none;
+}
+.verify-choice-btns .btn-volunteer.no:hover {
+  box-shadow: 0 6px 20px rgba(251, 174, 66, 0.35);
+}
 .btn-volunteer {
   padding: 12px 36px;
   border-radius: var(--radius-sm);

@@ -360,6 +360,34 @@
   // ============================================
   // التحقق من صحة الخطوة الحالية
   // ============================================
+  function scrollToField(el) {
+    if (!el) return;
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    el.focus();
+  }
+
+  function getMissingFields() {
+    const missing = [];
+    $$('.form-step').forEach(function (step) {
+      const stepNum = parseInt(step.getAttribute('data-step'));
+      const required = step.querySelectorAll('[required]');
+      for (let i = 0; i < required.length; i++) {
+        const field = required[i];
+        if (field.closest('.d-none') || field.closest('.form-step:not(.active)')) continue;
+        if (!field.value || field.value.trim() === '') {
+          const label = field.closest('.form-floating-custom');
+          const labelText = label ? label.querySelector('label') : null;
+          missing.push({
+            step: stepNum,
+            field: field,
+            label: labelText ? labelText.textContent.replace('*', '').trim() : field.name
+          });
+        }
+      }
+    });
+    return missing;
+  }
+
   function validateCurrentStep() {
     const step = $('.form-step[data-step="' + currentStep + '"]');
     if (!step) return true;
@@ -371,7 +399,7 @@
       if (field.closest('.d-none')) continue;
       if (!field.value || field.value.trim() === '') {
         showToast('يرجى ملء جميع الحقول المطلوبة', 'warning');
-        field.focus();
+        scrollToField(field);
         return false;
       }
     }
@@ -391,7 +419,7 @@
       if (!checked) {
         const lbl = g.querySelector('label');
         showToast('يرجى الإجابة على: ' + (lbl ? lbl.textContent.replace('*', '').trim() : 'الحقل المطلوب'), 'warning');
-        radios[0].focus();
+        scrollToField(radios[0]);
         return false;
       }
     }
@@ -401,21 +429,21 @@
       const name = step.querySelector('input[name="fullName"]');
       if (name && name.value.trim().split(/\s+/).length < 4) {
         showToast('الاسم الكامل يجب أن يكون 4 كلمات على الأقل', 'error');
-        name.focus();
+        scrollToField(name);
         return false;
       }
 
       const phone = step.querySelector('input[name="phone"]');
       if (phone && !/^01\d{9}$/.test(phone.value.trim())) {
         showToast('رقم الهاتف يجب أن يبدأ بـ 01 ويكون 11 رقم', 'error');
-        phone.focus();
+        scrollToField(phone);
         return false;
       }
 
       const email = step.querySelector('input[name="email"]');
       if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())) {
         showToast('البريد الإلكتروني غير صحيح', 'error');
-        email.focus();
+        scrollToField(email);
         return false;
       }
     }
@@ -425,7 +453,7 @@
       const agree = $('input[name="agree80Percent"]');
       if (agree && !agree.checked) {
         showToast('يجب الموافقة على الحضور 80% على الأقل', 'warning');
-        agree.focus();
+        scrollToField(agree);
         return false;
       }
       const willAttend = getRadio('willAttendAllDays');
@@ -433,7 +461,7 @@
         const absent = $('input[name="absentDays"]');
         if (absent && (!absent.value || absent.value.trim() === '')) {
           showToast('يرجى تحديد الأيام التي قد تتغيب عنها', 'warning');
-          absent.focus();
+          scrollToField(absent);
           return false;
         }
       }
@@ -450,21 +478,20 @@
 
     if (isSubmitting) return;
 
+    // لا يسمح بالإرسال إلا من الخطوة الأخيرة
+    if (currentStep < totalSteps) return;
+
     // التحقق من الإقرار
     const pledge = $('#pledgeCheckbox');
-    const pledgeError = $('#pledgeError');
     if (!pledge || !pledge.checked) {
-      pledgeError.classList.remove('d-none');
-      pledgeError.textContent = 'يجب الموافقة على الإقرار';
       showToast('يجب الموافقة على الإقرار', 'error');
+      scrollToField(pledge);
       return;
     }
-    pledgeError.classList.add('d-none');
 
     // التحقق من اختيار التراك
     updateTrackFields();
     const track1 = $('input[name="track1"]').value;
-    const track2 = $('input[name="track2"]').value;
     const trackError = $('#trackError');
     if (!track1) {
       trackError.classList.remove('d-none');
@@ -480,6 +507,26 @@
     // التحقق الشامل
     if (!validateFullData(data)) return;
 
+    // جمع الحقول الناقصة
+    const missingFields = getMissingFields();
+
+    // لو فيه حقول ناقصة — يظهر تأكيد بدل الرفض
+    if (missingFields.length > 0) {
+      const fieldNames = missingFields.map(function(f) { return '• ' + f.label; }).join('<br>');
+      const confirmed = await Swal.fire({
+        title: 'هل تأكد على إرسال البيانات؟',
+        html: '<p style="text-align:right;margin-bottom:10px">فيه بعض الحقول الناقصة:</p><div style="text-align:right;background:#fff3cd;padding:12px;border-radius:8px;max-height:200px;overflow-y:auto">' + fieldNames + '</div>',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#1a7f37',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'نعم، أرسل البيانات',
+        cancelButtonText: 'إلغاء',
+        rtl: true
+      });
+      if (!confirmed.isConfirmed) return;
+    }
+
     isSubmitting = true;
     setLoading(submitBtn, true);
 
@@ -487,19 +534,15 @@
       const response = await apiCall('submitRegistration', data);
 
       if (response.status === 'success') {
-        // البريد الترحيبي يرسل من الخادم فوراً ضمن طلب التسجيل نفسه بعد الحفظ في الشيت
         const successNote = $('.success-note');
         if (successNote) {
           successNote.textContent = response.emailSent
             ? 'تم إرسال بريد تأكيد إلى بريدك الإلكتروني.'
             : 'تم استلام تسجيلك وسيتم التواصل معك قريباً.';
         }
-
-        // عرض شاشة النجاح
         formSection.classList.add('d-none');
         successSection.classList.remove('d-none');
         window.scrollTo({ top: 0 });
-
         showToast('تم التسجيل بنجاح!', 'success');
       } else if (response.status === 'validation_error') {
         const errors = response.errors || [];

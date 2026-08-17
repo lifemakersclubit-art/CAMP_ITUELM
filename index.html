@@ -102,7 +102,7 @@
         </div>
       </div>
 
-      <form id="registrationForm" class="registration-form">
+      <form id="registrationForm" class="registration-form" novalidate>
         
         <!-- الخطوة 1: البيانات الشخصية -->
         <div class="form-step active" data-step="1">
@@ -241,8 +241,8 @@
               <div class="row g-3">
                 <div class="col-md-6">
                   <div class="form-floating-custom">
-                    <label>اللجنة <span class="req">*</span></label>
-                    <select name="committee" class="form-input form-select" required>
+                    <label>اللجنة</label>
+                    <select name="committee" class="form-input form-select">
                       <option value="">اختر اللجنة</option>
                       <option value="IT">تقنية المعلومات (IT) - إعداد وصيانة الأنظمة التقنية والدعم الفني</option>
                       <option value="HR">الموارد البشرية (HR) - التوظيف وإدارة الأعضاء وبناء الفرق</option>
@@ -341,7 +341,7 @@
               <label class="checkbox-card">
                 <input type="checkbox" name="agree80Percent">
                 <span class="check-mark"></span>
-                <span>أوافق على الحضور 80% على الأقل من أيام البرنامج</span>
+                <span>أوافق على الحضور 80% على الأقل من أيام البرنامج <span class="req">*</span></span>
               </label>
             </div>
 
@@ -381,7 +381,7 @@
           </div>
           <div class="step-body">
             <h4 class="sub-section-title">التقييم الذاتي</h4>
-            <p class="sub-section-desc">قيّم مهاراتك من 1 (ضعيف) إلى 5 (ممتاز)</p>
+            <p class="sub-section-desc">قيّم مهاراتك من 1 (ضعيف) إلى 5 (ممتاز) <span class="req">*</span></p>
             
             <div class="assessment-grid">
               <div class="assessment-item">
@@ -477,7 +477,7 @@
             </div>
 
             <div class="section-divider"><span>تقييم مهارات اللجان</span></div>
-            <p class="sub-section-desc">قيّم مهارات كل لجنة من 1 إلى 5 (سيتم تحميل اللجان من النظام)</p>
+            <p class="sub-section-desc">قيّم مهارات كل لجنة من 1 إلى 5 (سيتم تحميل اللجان من النظام) <span class="req">*</span></p>
             <div id="committeeSkillsContainer" class="committee-skills-container">
               <div class="text-muted text-center py-3">جاري تحميل مهارات اللجان...</div>
             </div>
@@ -514,7 +514,7 @@
             </div>
 
             <div class="section-divider"><span>الاحتياجات التدريبية</span></div>
-            <p class="sub-section-desc">اختر احتياجاتك التدريبية</p>
+            <p class="sub-section-desc">اختر احتياجاتك التدريبية <span class="req">*</span></p>
             
             <div id="trainingNeedsContainer" class="checkbox-grid">
               <label class="checkbox-card"><input type="checkbox" name="trainingNeeds" value="القيادة"><span class="check-mark"></span><span>القيادة</span></label>
@@ -528,7 +528,7 @@
             </div>
 
             <div class="section-divider"><span>احتياجات مخصصة للجان</span></div>
-            <p class="sub-section-desc">احتياجات خاصة بكل لجنة (سيتم تحميلها من النظام)</p>
+            <p class="sub-section-desc">احتياجات خاصة بكل لجنة (سيتم تحميلها من النظام) <span class="req">*</span></p>
             <div id="committeeNeedsContainer" class="checkbox-grid">
               <div class="text-muted text-center py-3">جاري التحميل...</div>
             </div>
@@ -570,7 +570,7 @@
               </div>
             </div>
 
-            <div class="section-divider"><span>هل تستطيع استخدام؟</span></div>
+            <div class="section-divider"><span>هل تستطيع استخدام؟ <span class="req">*</span></span></div>
             <div class="checkbox-grid">
               <label class="checkbox-card"><input type="checkbox" name="canGoogleDrive" value="true"><span class="check-mark"></span><span>Google Drive</span></label>
               <label class="checkbox-card"><input type="checkbox" name="canGoogleSheets" value="true"><span class="check-mark"></span><span>Google Sheets</span></label>
@@ -609,7 +609,7 @@
             </div>
             <div id="trackError" class="field-error d-none"></div>
 
-            <div class="section-divider"><span>ماذا يمكنك أن تقدم؟</span></div>
+            <div class="section-divider"><span>ماذا يمكنك أن تقدم؟ <span class="req">*</span></span></div>
             <div class="checkbox-grid">
               <label class="checkbox-card"><input type="checkbox" name="whatCanYouOffer" value="التدريب"><span class="check-mark"></span><span>التدريب</span></label>
               <label class="checkbox-card"><input type="checkbox" name="whatCanYouOffer" value="التنظيم"><span class="check-mark"></span><span>التنظيم</span></label>
@@ -633,7 +633,7 @@
               <label class="checkbox-card pledge-check">
                 <input type="checkbox" name="pledge" id="pledgeCheckbox">
                 <span class="check-mark"></span>
-                <span>أتعهد بالالتزام بجميع قواعد وأنظمة البرنامج، والحضور المنتظم، والمشاركة الفعالة طوال فترة البرنامج، وأتحمل المسؤولية الكاملة تجاه أي مخالفة لهذه الإلتزامات.</span>
+                <span>أتعهد بالالتزام بجميع قواعد وأنظمة البرنامج، والحضور المنتظم، والمشاركة الفعالة طوال فترة البرنامج، وأتحمل المسؤولية الكاملة تجاه أي مخالفة لهذه الإلتزامات. <span class="req">*</span></span>
               </label>
             </div>
             <div id="pledgeError" class="field-error d-none"></div>

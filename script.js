@@ -70,6 +70,12 @@
     $$('input[name="whatCanYouOffer"]').forEach(r => {
       r.addEventListener('change', toggleOtherCanOffer);
     });
+
+    // إظهار/إخفاء حقل الجامعة الأخرى
+    const universitySelect = registrationForm.querySelector('select[name="university"]');
+    if (universitySelect) {
+      universitySelect.addEventListener('change', toggleOtherUniversity);
+    }
     $$('input[name="pledge"]').forEach(c => {
       c.addEventListener('change', toggleSubmitBtn);
     });
@@ -304,6 +310,21 @@
       field.classList.remove('d-none');
     } else {
       field.classList.add('d-none');
+    }
+  }
+
+  function toggleOtherUniversity() {
+    const select = registrationForm.querySelector('select[name="university"]');
+    const selectWrap = $('#universitySelectWrap');
+    const input = $('#otherUniversityInput');
+    if (!select || !selectWrap || !input) return;
+    if (select.value === 'أخرى') {
+      selectWrap.classList.add('d-none');
+      input.classList.remove('d-none');
+      input.focus();
+    } else {
+      selectWrap.classList.remove('d-none');
+      input.classList.add('d-none');
     }
   }
 
@@ -577,6 +598,12 @@
     data.email = getVal('email');
     data.governorate = getVal('governorate');
     data.university = getVal('university');
+    if (!data.university) {
+      const otherInput = $('#otherUniversityInput');
+      if (otherInput && otherInput.value.trim()) {
+        data.university = otherInput.value.trim();
+      }
+    }
     data.faculty = getVal('faculty');
     data.studyYear = getVal('studyYear');
 

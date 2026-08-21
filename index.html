@@ -163,31 +163,35 @@
               <div class="col-md-6">
                 <div class="form-floating-custom">
                   <label>الجامعة <span class="req">*</span></label>
-                  <select name="university" class="form-input form-select" required>
-                    <option value="">اختر الجامعة</option>
-                    <option>فريق مركزي</option>
-                    <option>جامعة المنصورة</option><option>جامعة السويس</option>
-                    <option>جامعة قناة السويس</option><option>جامعة بنها</option>
-                    <option>جامعة الأزهر بالقاهرة</option><option>جامعة MTI</option>
-                    <option>جامعة المنيا</option><option>جامعة بني سويف</option>
-                    <option>جامعة أسيوط</option><option>جامعة أسوان</option>
-                    <option>جامعة قنا</option><option>جامعة سوهاج</option>
-                    <option>جامعة المعهد العاشر فرع مطروح</option><option>جامعة المعهد العاشر</option>
-                    <option>جامعة المنوفية</option><option>جامعة طنطا</option>
-                    <option>جامعة طيبة التكنولوجية</option><option>جامعة Sphinx</option>
-                    <option>جامعة الأقصر الحكومية</option><option>جامعة الأقصر الأهلية</option>
-                    <option>جامعة سيناء</option><option>جامعة العريش</option>
-                    <option>جامعة EST</option><option>جامعة مطروح</option>
-                    <option>جامعة الوادى الجديد</option><option>جامعة تفهنا فرع الأزهر</option>
-                    <option>جامعة الأقصر فرع الأزهر</option><option>معهد القاهرة العالى الجديد</option>
-                    <option>جامعة اللوتس</option>
-                    <option>المعهد التكنولوچى العالى للعلوم التطبيقية</option>
-                    <option>المعهد العالى للخدمة الإجتماعية باسوان</option>
-                    <option>جامعة القاهرة</option><option>جامعة الأهرام الكندية</option>
-                    <option>المعهد العالي للهندسة بالأقصر</option><option>جامعة المنوفية الأهلية</option>
-                    <option>جامعة المنصورة الأهلية</option><option>جامعة الزقازيق</option>
-                    <option>جامعة ميريت</option>
-                  </select>
+                  <div id="universitySelectWrap">
+                    <select name="university" class="form-input form-select" required>
+                      <option value="">اختر الجامعة</option>
+                      <option>فريق مركزي</option>
+                      <option>جامعة المنصورة</option><option>جامعة السويس</option>
+                      <option>جامعة قناة السويس</option><option>جامعة بنها</option>
+                      <option>جامعة الأزهر بالقاهرة</option><option>جامعة MTI</option>
+                      <option>جامعة المنيا</option><option>جامعة بني سويف</option>
+                      <option>جامعة أسيوط</option><option>جامعة أسوان</option>
+                      <option>جامعة قنا</option><option>جامعة سوهاج</option>
+                      <option>جامعة المعهد العاشر فرع مطروح</option><option>جامعة المعهد العاشر</option>
+                      <option>جامعة المنوفية</option><option>جامعة طنطا</option>
+                      <option>جامعة طيبة التكنولوجية</option><option>جامعة Sphinx</option>
+                      <option>جامعة الأقصر الحكومية</option><option>جامعة الأقصر الأهلية</option>
+                      <option>جامعة سيناء</option><option>جامعة العريش</option>
+                      <option>جامعة EST</option><option>جامعة مطروح</option>
+                      <option>جامعة الوادى الجديد</option><option>جامعة تفهنا فرع الأزهر</option>
+                      <option>جامعة الأقصر فرع الأزهر</option><option>معهد القاهرة العالى الجديد</option>
+                      <option>جامعة اللوتس</option>
+                      <option>المعهد التكنولوچى العالى للعلوم التطبيقية</option>
+                      <option>المعهد العالى للخدمة الإجتماعية باسوان</option>
+                      <option>جامعة القاهرة</option><option>جامعة الأهرام الكندية</option>
+                      <option>المعهد العالي للهندسة بالأقصر</option><option>جامعة المنوفية الأهلية</option>
+                      <option>جامعة المنصورة الأهلية</option><option>جامعة الزقازيق</option>
+                      <option>جامعة ميريت</option>
+                      <option value="أخرى">أخرى</option>
+                    </select>
+                  </div>
+                  <input type="text" name="otherUniversity" class="form-input d-none" placeholder="اكتب اسم الجامعة" id="otherUniversityInput">
                 </div>
               </div>
               <div class="col-md-6">
@@ -664,7 +668,6 @@
 
   <!-- شاشة النجاح -->
   <section id="successSection" class="success-section d-none">
-    <div class="container">
       <div class="success-wrapper">
         <div class="success-card">
           <div class="brand-logos">
@@ -684,7 +687,6 @@
           <p class="success-note">تم إرسال بريد تأكيد إلى بريدك الإلكتروني.</p>
         </div>
       </div>
-    </div>
   </section>
 
   <!-- الدعم الفني -->

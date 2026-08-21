@@ -1097,7 +1097,7 @@ body {
 }
 
 .success-wrapper {
-  max-width: 500px;
+  max-width: 600px;
   width: 100%;
   position: relative;
   z-index: 2;
@@ -1105,32 +1105,32 @@ body {
 .success-card {
   background: var(--white);
   border-radius: var(--radius-xl);
-  padding: 56px 40px;
+  padding: 72px 56px;
   text-align: center;
   box-shadow: var(--shadow-lg);
   animation: slideUp 0.7s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .success-icon {
-  width: 100px;
-  height: 100px;
+  width: 120px;
+  height: 120px;
   background: linear-gradient(135deg, #27AE60, #2ECC71);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 24px;
+  margin: 0 auto 32px;
   color: var(--white);
   animation: bounceIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 .success-title {
   font-family: var(--font-display);
-  font-size: 28px;
+  font-size: 34px;
   font-weight: 900;
   color: var(--dark);
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 .success-desc {
-  font-size: 15px;
+  font-size: 17px;
   color: var(--gray-500);
   line-height: 1.7;
 }
